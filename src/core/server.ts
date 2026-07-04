@@ -1,9 +1,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
+import type { ServerNotification, ServerRequest } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { readCache } from "./cache.js";
 import { getDomainData } from "./data.js";
 import { domains } from "./registry.js";
-import type { Domain, Item } from "./types.js";
+import type { Domain, ExtractContext, Item } from "./types.js";
 import { PACKAGE_VERSION } from "./version.js";
 
 function compact(item: Item): Item {
@@ -30,6 +32,31 @@ function findDomain(id: string): Domain | undefined {
 
 const validIds = () => domains.map((d) => d.id).join(", ");
 
+const domainIdSchema = z
+  .enum(domains.map((d) => d.id) as [string, ...string[]])
+  .describe("Id do domínio (ver list_domains)");
+
+/** Liga o abort e o progressToken do request MCP à extração do domínio. */
+function extractContext(
+  extra: RequestHandlerExtra<ServerRequest, ServerNotification>
+): ExtractContext {
+  const progressToken = extra._meta?.progressToken;
+  return {
+    signal: extra.signal,
+    onProgress:
+      progressToken === undefined
+        ? undefined
+        : (progress, total, message) => {
+            extra
+              .sendNotification({
+                method: "notifications/progress",
+                params: { progressToken, progress, total, message },
+              })
+              .catch(() => {});
+          },
+  };
+}
+
 export function createServer(): McpServer {
   const server = new McpServer(
     { name: "opf-br-mcp", version: PACKAGE_VERSION },
@@ -50,7 +77,12 @@ export function createServer(): McpServer {
         "Lista os domínios de conhecimento do Open Finance Brasil disponíveis neste server, " +
         "com os filtros aceitos por cada um e o estado do cache local. " +
         "Comece por aqui; depois use search(domain, ...) e get_item(domain, id).",
-      annotations: { readOnlyHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     async () => {
       const out = domains.map((d) => {
@@ -78,7 +110,7 @@ export function createServer(): McpServer {
         "Retorno compacto (omite nulls). Cada resultado tem `id` para usar em get_item. " +
         "Na primeira consulta o domínio é extraído das fontes públicas (pode levar ~30s).",
       inputSchema: {
-        domain: z.string().describe("Id do domínio (ver list_domains)"),
+        domain: domainIdSchema,
         query: z.string().optional().describe("Substring em campos textuais"),
         filters: z.record(z.string()).optional().describe("Filtros específicos do domínio"),
         limit: z
@@ -89,9 +121,14 @@ export function createServer(): McpServer {
           .default(20)
           .describe("Máx. de resultados (1-100, default 20)"),
       },
-      annotations: { readOnlyHint: true, openWorldHint: true },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    async ({ domain, query, filters, limit }) => {
+    async ({ domain, query, filters, limit }, extra) => {
       const d = findDomain(domain);
       if (!d) return errorText(`Domínio desconhecido: "${domain}". Válidos: ${validIds()}`);
       if (filters) {
@@ -104,7 +141,7 @@ export function createServer(): McpServer {
         }
       }
       try {
-        const { data, stale, extractedAt } = await getDomainData(d);
+        const { data, stale, extractedAt } = await getDomainData(d, false, extractContext(extra));
         const results = d.search(data, query, filters);
         const max = limit ?? 20;
         return text({
@@ -130,16 +167,21 @@ export function createServer(): McpServer {
         "Devolve o registro completo de um item pelo `id` retornado por search " +
         "(no domínio payments-openapi inclui o nó integral da spec em `detail`).",
       inputSchema: {
-        domain: z.string().describe("Id do domínio"),
+        domain: domainIdSchema,
         id: z.string().describe("Id do item (vindo de search)"),
       },
-      annotations: { readOnlyHint: true, openWorldHint: true },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    async ({ domain, id }) => {
+    async ({ domain, id }, extra) => {
       const d = findDomain(domain);
       if (!d) return errorText(`Domínio desconhecido: "${domain}". Válidos: ${validIds()}`);
       try {
-        const { data, stale, extractedAt } = await getDomainData(d);
+        const { data, stale, extractedAt } = await getDomainData(d, false, extractContext(extra));
         const item = d.getItem(data, id);
         if (!item) {
           return errorText(`Item não encontrado em ${domain}: "${id}". Use search para descobrir ids.`);
@@ -159,11 +201,11 @@ export function createServer(): McpServer {
         "Força re-extração das fontes públicas (ignora o TTL de 24h do cache). " +
         "Sem `domain`, atualiza todos. Use quando suspeitar de dados desatualizados.",
       inputSchema: {
-        domain: z.string().optional().describe("Id do domínio; omita para todos"),
+        domain: domainIdSchema.optional().describe("Id do domínio; omita para todos"),
       },
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
-    async ({ domain }) => {
+    async ({ domain }, extra) => {
       const targets = domain ? domains.filter((d) => d.id === domain) : domains;
       if (domain && targets.length === 0) {
         return errorText(`Domínio desconhecido: "${domain}". Válidos: ${validIds()}`);
@@ -171,7 +213,7 @@ export function createServer(): McpServer {
       const report: Record<string, string> = {};
       for (const d of targets) {
         try {
-          const { data } = await getDomainData(d, true);
+          const { data } = await getDomainData(d, true, extractContext(extra));
           report[d.id] = `ok: ${data.items.length} itens`;
         } catch (err) {
           report[d.id] = `erro: ${(err as Error).message}`;

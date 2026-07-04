@@ -63,13 +63,17 @@ export const pcmDomain: Domain = {
     { name: "method", description: "Verbo HTTP presente em metodos[] (ex.: POST)" },
     { name: "page", description: "Substring no título da página Confluence" },
   ],
-  async extract(): Promise<DomainData> {
+  async extract(ctx): Promise<DomainData> {
+    const total = pcmConfig.pages.length;
     const pages: PcmPage[] = [];
     for (const [i, page] of pcmConfig.pages.entries()) {
+      if (ctx?.signal?.aborted) throw new Error("Extração cancelada pelo cliente");
       if (i > 0) await sleep(pcmConfig.interRequestDelayMs);
-      const { html, url } = await fetchConfluencePage(page.pageId);
+      ctx?.onProgress?.(i, total, `Extraindo "${page.title}"`);
+      const { html, url } = await fetchConfluencePage(page.pageId, ctx?.signal);
       pages.push({ pageId: page.pageId, title: page.title, url, fields: parseAdditionalInfoTables(html) });
     }
+    ctx?.onProgress?.(total, total);
     return { items: buildItems(pages) };
   },
   search(data, query, filters = {}) {

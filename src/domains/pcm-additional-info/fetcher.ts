@@ -13,11 +13,15 @@ interface ConfluenceResponse {
   _links?: { webui?: string };
 }
 
-export async function fetchConfluencePage(pageId: string): Promise<{ html: string; url: string }> {
+export async function fetchConfluencePage(
+  pageId: string,
+  signal?: AbortSignal
+): Promise<{ html: string; url: string }> {
   const apiUrl = `${pcmConfig.confluenceBaseUrl}/wiki/rest/api/content/${pageId}?expand=body.view`;
   const response = await fetchWithRetry(apiUrl, {
     retryDelaysMs: pcmConfig.retryDelaysMs,
     headers: HEADERS,
+    signal,
   });
   const json = (await response.json()) as ConfluenceResponse;
   return {

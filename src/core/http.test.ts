@@ -23,4 +23,28 @@ describe("fetchWithRetry", () => {
       fetchWithRetry("https://example.test/x", { retryDelaysMs: [0] })
     ).rejects.toThrow("offline");
   });
+
+  it("signal já abortado → rejeita sem tentar nenhum fetch", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const ac = new AbortController();
+    ac.abort();
+    await expect(
+      fetchWithRetry("https://example.test/x", { retryDelaysMs: [0], signal: ac.signal })
+    ).rejects.toThrow();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("signal abortado entre tentativas → não retenta", async () => {
+    const ac = new AbortController();
+    const fetchMock = vi.fn().mockImplementation(() => {
+      ac.abort();
+      return Promise.reject(new Error("ECONNRESET"));
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(
+      fetchWithRetry("https://example.test/x", { retryDelaysMs: [0, 0], signal: ac.signal })
+    ).rejects.toThrow("ECONNRESET");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

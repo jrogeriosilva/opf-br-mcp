@@ -1,5 +1,5 @@
 import { isFresh, readCache, writeCache } from "./cache.js";
-import type { Domain, DomainData } from "./types.js";
+import type { Domain, DomainData, ExtractContext } from "./types.js";
 import { PACKAGE_VERSION } from "./version.js";
 
 export interface DomainDataResult {
@@ -9,13 +9,17 @@ export interface DomainDataResult {
   stale: boolean;
 }
 
-export async function getDomainData(domain: Domain, force = false): Promise<DomainDataResult> {
+export async function getDomainData(
+  domain: Domain,
+  force = false,
+  ctx?: ExtractContext
+): Promise<DomainDataResult> {
   const cached = readCache(domain.id);
   if (!force && cached && isFresh(cached, domain.ttlHours)) {
     return { data: cached.data, extractedAt: cached.extractedAt, stale: false };
   }
   try {
-    const data = await domain.extract();
+    const data = await domain.extract(ctx);
     const entry = writeCache(domain.id, data, PACKAGE_VERSION);
     return { data, extractedAt: entry.extractedAt, stale: false };
   } catch (err) {

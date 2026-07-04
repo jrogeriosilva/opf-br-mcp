@@ -67,4 +67,11 @@ describe("getDomainData", () => {
     const extract = vi.fn().mockRejectedValue(new Error("offline"));
     await expect(getDomainData(fakeDomain(extract))).rejects.toThrow("offline");
   });
+
+  it("repassa o contexto de extração (signal/onProgress) para extract", async () => {
+    const extract = vi.fn().mockResolvedValue({ items: [] });
+    const ctx = { signal: new AbortController().signal, onProgress: vi.fn() };
+    await getDomainData(fakeDomain(extract), true, ctx);
+    expect(extract).toHaveBeenCalledWith(ctx);
+  });
 });

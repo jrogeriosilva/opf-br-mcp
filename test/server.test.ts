@@ -45,15 +45,33 @@ describe("opf-br-mcp server", () => {
     ]);
   });
 
-  it("tools de leitura anunciam readOnlyHint; refresh não", async () => {
+  it("tools de leitura anunciam readOnly, não-destrutivas e idempotentes; refresh não é readOnly", async () => {
     const client = await connectedClient();
     const { tools } = await client.listTools();
     const byName = Object.fromEntries(tools.map((t) => [t.name, t]));
     for (const name of ["list_domains", "search", "get_item"]) {
       expect(byName[name].annotations?.readOnlyHint, name).toBe(true);
+      expect(byName[name].annotations?.destructiveHint, name).toBe(false);
+      expect(byName[name].annotations?.idempotentHint, name).toBe(true);
     }
     expect(byName.refresh.annotations?.readOnlyHint).toBe(false);
+    expect(byName.refresh.annotations?.destructiveHint).toBe(false);
     expect(byName.refresh.annotations?.idempotentHint).toBe(true);
+  });
+
+  it("search, get_item e refresh expõem os domínios válidos como enum no schema", async () => {
+    const client = await connectedClient();
+    const { tools } = await client.listTools();
+    const byName = Object.fromEntries(tools.map((t) => [t.name, t]));
+    for (const name of ["search", "get_item", "refresh"]) {
+      const schema = byName[name].inputSchema as {
+        properties?: Record<string, { enum?: string[] }>;
+      };
+      expect(schema.properties?.domain?.enum, name).toEqual([
+        "pcm-additional-info",
+        "payments-openapi",
+      ]);
+    }
   });
 
   it("list_domains descreve domínios e filtros sem tocar a rede", async () => {
@@ -98,7 +116,7 @@ describe("opf-br-mcp server", () => {
     expect(parsed.results[0].campo).toBe("tokenId");
   });
 
-  it("domínio desconhecido retorna isError com os ids válidos", async () => {
+  it("domínio desconhecido é rejeitado pela validação do schema com os ids válidos", async () => {
     const client = await connectedClient();
     const result = await client.callTool({
       name: "search",

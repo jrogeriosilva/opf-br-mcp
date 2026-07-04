@@ -21,11 +21,15 @@ export const paymentsDomain: Domain = {
     { name: "method", description: "Verbo HTTP exato (ex.: POST)" },
     { name: "schema", description: "Substring no nome do schema (case-insensitive)" },
   ],
-  async extract(): Promise<DomainData> {
+  async extract(ctx): Promise<DomainData> {
+    if (ctx?.signal?.aborted) throw new Error("Extração cancelada pelo cliente");
+    ctx?.onProgress?.(0, 1, `Baixando spec ${paymentsConfig.specName} ${paymentsConfig.specVersion}`);
     const response = await fetchWithRetry(paymentsConfig.url, {
       retryDelaysMs: paymentsConfig.retryDelaysMs,
+      signal: ctx?.signal,
     });
     const yamlText = await response.text();
+    ctx?.onProgress?.(1, 1);
     return { items: parseOpenApiSpec(yamlText, paymentsConfig.specName) };
   },
   search(data, query, filters = {}) {

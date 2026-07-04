@@ -62,7 +62,7 @@ describe("pcmBusinessRulesDomain", () => {
     };
     const results = pcmBusinessRulesDomain.search(data, undefined, { heading: "Longa" });
     expect(results).toHaveLength(1);
-    const snippet = (results[0] as { snippet: string }).snippet;
+    const snippet = (results[0] as unknown as { snippet: string }).snippet;
     expect(snippet.endsWith("…")).toBe(true);
     expect(snippet.length).toBeLessThanOrEqual(201);
 

@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  title: API Enrollments for Payment Initiation - Open Finance Brasil
+  version: 2.2.0
+paths:
+  /enrollments:
+    post:
+      tags: [Vínculo de dispositivo]
+      summary: Criar vínculo de dispositivo.
+      description: Método para criação de um novo vínculo de dispositivo.
+      requestBody:
+        content:
+          application/jwt:
+            schema:
+              $ref: '#/components/schemas/CreateEnrollment'
+  /enrollments/{enrollmentId}/risk-signals:
+    post:
+      tags: [Vínculo de dispositivo]
+      summary: Enviar informações de risco do vínculo.
+      parameters:
+        - name: enrollmentId
+          in: path
+          required: true
+          schema:
+            type: string
+  /consents/{consentId}/authorise:
+    post:
+      tags: [Consentimento]
+      summary: Autorizar consentimento via fluxo sem redirecionamento.
+      description: Autoriza o consentimento utilizando assinatura FIDO.
+      requestBody:
+        content:
+          application/jwt:
+            schema:
+              $ref: '#/components/schemas/AuthoriseConsent'
+components:
+  schemas:
+    CreateEnrollment:
+      type: object
+      description: Payload de criação de vínculo de dispositivo
+      required: [data]
+      properties:
+        data:
+          type: object
+    AuthoriseConsent:
+      type: object
+      description: Payload de autorização de consentimento
+      required: [data]
+      properties:
+        data:
+          type: object

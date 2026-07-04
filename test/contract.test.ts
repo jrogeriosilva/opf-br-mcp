@@ -8,6 +8,7 @@ import { parseOpenApiSpec } from "../src/domains/payments-v4-openapi/parser.js";
 
 const pcmHtml = readFileSync(new URL("./fixtures/pcm-page.html", import.meta.url), "utf8");
 const paymentsYaml = readFileSync(new URL("./fixtures/payments-spec.yml", import.meta.url), "utf8");
+const paymentsV5Yaml = readFileSync(new URL("./fixtures/payments-v5-spec.yml", import.meta.url), "utf8");
 
 // Todo domínio novo DEVE registrar aqui um builder de dados de fixture.
 const fixtureData: Record<string, () => DomainData> = {
@@ -17,6 +18,7 @@ const fixtureData: Record<string, () => DomainData> = {
     ]),
   }),
   "payments-v4-openapi": () => ({ items: parseOpenApiSpec(paymentsYaml, "payments") }),
+  "payments-v5-openapi": () => ({ items: parseOpenApiSpec(paymentsV5Yaml, "payments") }),
 };
 
 describe.each(domains.map((d) => [d.id, d] as const))("contrato do domínio %s", (id, domain) => {

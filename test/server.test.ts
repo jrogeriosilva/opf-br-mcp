@@ -70,6 +70,7 @@ describe("opf-br-mcp server", () => {
       expect(schema.properties?.domain?.enum, name).toEqual([
         "pcm-additional-info",
         "payments-v4-openapi",
+        "payments-v5-openapi",
       ]);
     }
   });
@@ -81,6 +82,7 @@ describe("opf-br-mcp server", () => {
     expect(parsed.map((d: { id: string }) => d.id)).toEqual([
       "pcm-additional-info",
       "payments-v4-openapi",
+      "payments-v5-openapi",
     ]);
     expect(parsed[0].filters.map((f: { name: string }) => f.name)).toContain("field");
   });

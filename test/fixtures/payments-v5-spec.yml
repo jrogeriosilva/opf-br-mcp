@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  title: API Payment Initiation - Open Finance Brasil
+  version: 5.0.0
+paths:
+  /consents:
+    post:
+      tags: [Consents]
+      summary: Criar consentimento para a iniciação de pagamento.
+      description: Método de criação do consentimento para a iniciação de pagamento.
+      requestBody:
+        content:
+          application/jwt:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentConsent'
+  /consents/{consentId}:
+    get:
+      tags: [Consents]
+      summary: Consultar consentimento para iniciação de pagamento.
+      parameters:
+        - name: consentId
+          in: path
+          required: true
+          schema:
+            type: string
+  /pix/payments:
+    post:
+      tags: [Payments]
+      summary: Criar iniciação de pagamento.
+      description: Cria a iniciação de pagamento PIX consentida.
+      requestBody:
+        content:
+          application/jwt:
+            schema:
+              $ref: '#/components/schemas/CreatePixPayment'
+components:
+  schemas:
+    CreatePaymentConsent:
+      type: object
+      description: Payload de criação de consentimento de pagamento
+      required: [data]
+      properties:
+        data:
+          type: object
+    CreatePixPayment:
+      type: object
+      description: Payload de criação de pagamento PIX
+      required: [data]
+      properties:
+        data:
+          type: object

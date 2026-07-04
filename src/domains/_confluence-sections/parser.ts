@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import type { AnyNode } from "domhandler";
 
-export interface PcmSection {
+export interface ConfluenceSection {
   heading: string;
   level: number;
   content: string;
@@ -45,9 +45,9 @@ function blockText($: cheerio.CheerioAPI, node: AnyNode): string {
  * (h1–h3). O conteúdo antes do primeiro heading vira uma seção sintética
  * `intro` (level 0). Seções sem heading e sem conteúdo são descartadas.
  */
-export function parseSections(html: string): PcmSection[] {
+export function parseSections(html: string): ConfluenceSection[] {
   const $ = cheerio.load(html);
-  const sections: PcmSection[] = [];
+  const sections: ConfluenceSection[] = [];
 
   const headings = $(HEADING_SELECTOR).toArray();
 

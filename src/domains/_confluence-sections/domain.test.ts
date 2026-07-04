@@ -1,13 +1,29 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { DomainData } from "../../core/types.js";
-import { buildItems, pcmBusinessRulesDomain } from "./index.js";
+import {
+  buildItems,
+  createConfluenceSectionsDomain,
+  type ConfluenceSectionsConfig,
+} from "./domain.js";
 import { parseSections } from "./parser.js";
 
 const html = readFileSync(
   new URL("../../../test/fixtures/pcm-business-rules-page.html", import.meta.url),
   "utf8"
 );
+
+const testConfig: ConfluenceSectionsConfig = {
+  id: "test-sections",
+  title: "Domínio de teste",
+  description: "Config de teste para a fábrica de seções Confluence.",
+  confluenceBaseUrl: "http://x",
+  interRequestDelayMs: 0,
+  retryDelaysMs: [],
+  pages: [],
+};
+
+const domain = createConfluenceSectionsDomain(testConfig);
 
 function fixtureData(): DomainData {
   return {
@@ -17,9 +33,9 @@ function fixtureData(): DomainData {
   };
 }
 
-describe("pcmBusinessRulesDomain", () => {
-  it("tem id pcm-business-rules", () => {
-    expect(pcmBusinessRulesDomain.id).toBe("pcm-business-rules");
+describe("createConfluenceSectionsDomain", () => {
+  it("usa o id do config", () => {
+    expect(domain.id).toBe("test-sections");
   });
 
   it("desambigua headings repetidos no id", () => {
@@ -31,20 +47,20 @@ describe("pcmBusinessRulesDomain", () => {
   });
 
   it("search devolve snippet e não o content completo", () => {
-    const results = pcmBusinessRulesDomain.search(fixtureData(), undefined, { heading: "reporte" });
+    const results = domain.search(fixtureData(), undefined, { heading: "reporte" });
     expect(results).toHaveLength(1);
     expect(results[0]).toHaveProperty("snippet");
     expect(results[0]).not.toHaveProperty("content");
   });
 
   it("filtro contains casa no conteúdo da seção", () => {
-    const results = pcmBusinessRulesDomain.search(fixtureData(), undefined, { contains: "conciliado" });
+    const results = domain.search(fixtureData(), undefined, { contains: "conciliado" });
     expect(results.map((r) => r.heading)).toContain("PAIRED");
   });
 
   it("getItem devolve a seção completa com content", () => {
-    const paired = pcmBusinessRulesDomain.search(fixtureData(), undefined, { heading: "PAIRED" })[0];
-    const item = pcmBusinessRulesDomain.getItem(fixtureData(), paired.id);
+    const paired = domain.search(fixtureData(), undefined, { heading: "PAIRED" })[0];
+    const item = domain.getItem(fixtureData(), paired.id);
     expect(item).not.toBeNull();
     expect(item!.content).toBe("Reporte conciliado com sucesso.");
   });
@@ -60,23 +76,22 @@ describe("pcmBusinessRulesDomain", () => {
         },
       ]),
     };
-    const results = pcmBusinessRulesDomain.search(data, undefined, { heading: "Longa" });
+    const results = domain.search(data, undefined, { heading: "Longa" });
     expect(results).toHaveLength(1);
     const snippet = (results[0] as unknown as { snippet: string }).snippet;
     expect(snippet.endsWith("…")).toBe(true);
     expect(snippet.length).toBeLessThanOrEqual(201);
 
-    const item = pcmBusinessRulesDomain.getItem(data, results[0].id);
+    const item = domain.getItem(data, results[0].id);
     expect(item).not.toBeNull();
     expect(item!.content).toBe("x".repeat(250));
     expect(item!.content).not.toContain("…");
   });
 
   it("filtro page casa no título da página e retorna vazio quando não casa", () => {
-    const matches = pcmBusinessRulesDomain.search(fixtureData(), undefined, { page: "Processamento" });
+    const matches = domain.search(fixtureData(), undefined, { page: "Processamento" });
     expect(matches.length).toBeGreaterThan(0);
-
-    const noMatch = pcmBusinessRulesDomain.search(fixtureData(), undefined, { page: "Inexistente" });
+    const noMatch = domain.search(fixtureData(), undefined, { page: "Inexistente" });
     expect(noMatch).toEqual([]);
   });
 });

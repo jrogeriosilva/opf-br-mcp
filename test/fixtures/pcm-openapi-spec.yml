@@ -1,0 +1,27 @@
+openapi: 3.9.2
+info:
+  title: PCM-Openapi
+  version: 1.0.0
+paths:
+  /report-api/v1/private/report/:
+    post:
+      summary: Inclusão de reports
+      description: Inclusão de reportes na plataforma.
+      tags:
+        - Private
+  /report-api/v1/private/report/{fapiInteractonId}:
+    get:
+      summary: Consulta um report
+      description: Consulta de um reporte específico por identificador.
+      tags:
+        - Private
+components:
+  schemas:
+    ReportModel:
+      type: object
+      description: Modelo de um reporte da plataforma.
+      required:
+        - reportId
+      properties:
+        reportId:
+          type: string

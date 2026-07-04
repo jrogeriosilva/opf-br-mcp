@@ -13,6 +13,8 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | `enrollments-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.2.0 da API de Vínculo de Dispositivo (Enrollments, FIDO, Pix Automático) |
 | `automatic-payments-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.2.0 da API de Pagamentos Automáticos (Pix Automático e Transferências Inteligentes) |
 | `consents-v3-openapi` | GitHub Pages openbanking-brasil.github.io | Spec OpenAPI 3.3.1 da API de Consentimentos (Dados Cadastrais e Transacionais) |
+| `pcm-openapi` | GitHub OpenBanking-Brasil/pcm-specs | Spec OpenAPI da PCM (reportes, hybrid-flow, opendata, consents/stock, credit-portabilities, payments/status) |
+| `pcm-business-rules` | Confluence público OFB | Regras de negócio da PCM (Reporte, Processamento, Divergências, Especificação Técnica, Manual de Integração) — item por seção |
 
 ## Tools
 

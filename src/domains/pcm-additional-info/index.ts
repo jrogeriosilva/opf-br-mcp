@@ -1,7 +1,7 @@
 import { sleep } from "../../core/http.js";
 import type { Domain, DomainData, Item } from "../../core/types.js";
 import { pcmConfig } from "./config.js";
-import { fetchConfluencePage } from "./fetcher.js";
+import { fetchConfluencePage } from "../../core/confluence.js";
 import { parseAdditionalInfoTables, type PcmField } from "./parser.js";
 
 interface PcmPage {
@@ -70,7 +70,12 @@ export const pcmDomain: Domain = {
       if (ctx?.signal?.aborted) throw new Error("Extração cancelada pelo cliente");
       if (i > 0) await sleep(pcmConfig.interRequestDelayMs);
       ctx?.onProgress?.(i, total, `Extraindo "${page.title}"`);
-      const { html, url } = await fetchConfluencePage(page.pageId, ctx?.signal);
+      const { html, url } = await fetchConfluencePage(
+        pcmConfig.confluenceBaseUrl,
+        page.pageId,
+        pcmConfig.retryDelaysMs,
+        ctx?.signal
+      );
       pages.push({ pageId: page.pageId, title: page.title, url, fields: parseAdditionalInfoTables(html) });
     }
     ctx?.onProgress?.(total, total);

@@ -10,6 +10,10 @@ const pcmHtml = readFileSync(new URL("./fixtures/pcm-page.html", import.meta.url
 const paymentsYaml = readFileSync(new URL("./fixtures/payments-spec.yml", import.meta.url), "utf8");
 const paymentsV5Yaml = readFileSync(new URL("./fixtures/payments-v5-spec.yml", import.meta.url), "utf8");
 const enrollmentsV2Yaml = readFileSync(new URL("./fixtures/enrollments-v2-spec.yml", import.meta.url), "utf8");
+const automaticPaymentsV2Yaml = readFileSync(
+  new URL("./fixtures/automatic-payments-v2-spec.yml", import.meta.url),
+  "utf8",
+);
 
 // Todo domínio novo DEVE registrar aqui um builder de dados de fixture.
 const fixtureData: Record<string, () => DomainData> = {
@@ -21,6 +25,9 @@ const fixtureData: Record<string, () => DomainData> = {
   "payments-v4-openapi": () => ({ items: parseOpenApiSpec(paymentsYaml, "payments") }),
   "payments-v5-openapi": () => ({ items: parseOpenApiSpec(paymentsV5Yaml, "payments") }),
   "enrollments-v2-openapi": () => ({ items: parseOpenApiSpec(enrollmentsV2Yaml, "enrollments") }),
+  "automatic-payments-v2-openapi": () => ({
+    items: parseOpenApiSpec(automaticPaymentsV2Yaml, "automatic-payments"),
+  }),
 };
 
 describe.each(domains.map((d) => [d.id, d] as const))("contrato do domínio %s", (id, domain) => {

@@ -1,0 +1,62 @@
+openapi: 3.0.0
+info:
+  title: API Automatic Payments - Open Finance Brasil
+  version: 2.2.0
+paths:
+  /recurring-consents:
+    post:
+      tags: [Pagamentos]
+      summary: Cria um consentimento para transações de pagamentos.
+      description: Método para criação de um consentimento de pagamento recorrente.
+      requestBody:
+        content:
+          application/jwt:
+            schema:
+              $ref: '#/components/schemas/CreateRecurringConsent'
+  /recurring-consents/{recurringConsentId}:
+    get:
+      tags: [Pagamentos]
+      summary: Busca informações de um consentimento.
+      parameters:
+        - name: recurringConsentId
+          in: path
+          required: true
+          schema:
+            type: string
+    patch:
+      tags: [Pagamentos]
+      summary: Rejeita, revoga ou edita um consentimento.
+      parameters:
+        - name: recurringConsentId
+          in: path
+          required: true
+          schema:
+            type: string
+  /pix/recurring-payments:
+    post:
+      tags: [Pagamentos]
+      summary: Cria uma transação de pagamento.
+      requestBody:
+        content:
+          application/jwt:
+            schema:
+              $ref: '#/components/schemas/CreateRecurringPixPayment'
+    get:
+      tags: [Pagamentos]
+      summary: Busca informações de transações de pagamentos associadas a um consentimento.
+components:
+  schemas:
+    CreateRecurringConsent:
+      type: object
+      description: Payload de criação de consentimento recorrente
+      required: [data]
+      properties:
+        data:
+          type: object
+    CreateRecurringPixPayment:
+      type: object
+      description: Payload de criação de pagamento Pix recorrente
+      required: [data]
+      properties:
+        data:
+          type: object

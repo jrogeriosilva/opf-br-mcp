@@ -11,6 +11,7 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | `payments-v4-openapi` | GitHub OpenBanking-Brasil/openapi | Spec OpenAPI 4.0.0 da API de Pagamentos |
 | `payments-v5-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 5.0.0 da API de Iniciação de Pagamentos (consentimentos + Pix) |
 | `enrollments-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.2.0 da API de Vínculo de Dispositivo (Enrollments, FIDO, Pix Automático) |
+| `automatic-payments-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.2.0 da API de Pagamentos Automáticos (Pix Automático e Transferências Inteligentes) |
 
 ## Tools
 

@@ -5,7 +5,13 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { writeCache } from "../src/core/cache.js";
+import { domains } from "../src/core/registry.js";
 import { createServer } from "../src/core/server.js";
+
+// Ids esperados derivados da registry: o teste verifica que o servidor repassa
+// os domínios registrados (ordem e conteúdo), sem exigir edição manual a cada
+// novo domínio.
+const domainIds = domains.map((d) => d.id);
 
 let dir: string;
 
@@ -67,14 +73,7 @@ describe("opf-br-mcp server", () => {
       const schema = byName[name].inputSchema as {
         properties?: Record<string, { enum?: string[] }>;
       };
-      expect(schema.properties?.domain?.enum, name).toEqual([
-        "pcm-additional-info",
-        "payments-v4-openapi",
-        "payments-v5-openapi",
-        "enrollments-v2-openapi",
-        "automatic-payments-v2-openapi",
-        "consents-v3-openapi",
-      ]);
+      expect(schema.properties?.domain?.enum, name).toEqual(domainIds);
     }
   });
 
@@ -82,14 +81,7 @@ describe("opf-br-mcp server", () => {
     const client = await connectedClient();
     const result = await client.callTool({ name: "list_domains", arguments: {} });
     const parsed = JSON.parse(firstText(result));
-    expect(parsed.map((d: { id: string }) => d.id)).toEqual([
-      "pcm-additional-info",
-      "payments-v4-openapi",
-      "payments-v5-openapi",
-      "enrollments-v2-openapi",
-      "automatic-payments-v2-openapi",
-      "consents-v3-openapi",
-    ]);
+    expect(parsed.map((d: { id: string }) => d.id)).toEqual(domainIds);
     expect(parsed[0].filters.map((f: { name: string }) => f.name)).toContain("field");
   });
 

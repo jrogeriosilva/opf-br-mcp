@@ -7,8 +7,8 @@ import { parseAdditionalInfoTables } from "../src/domains/pcm-additional-info/pa
 import { parseOpenApiSpec } from "../src/domains/_openapi/parser.js";
 import { parseOpenApiSpec as parseConsentsV3 } from "../src/domains/_openapi/parser.js";
 import { parseOpenApiSpec as parsePcmOpenapi } from "../src/domains/pcm-openapi/parser.js";
-import { buildItems as buildPcmRulesItems } from "../src/domains/pcm-business-rules/index.js";
-import { parseSections } from "../src/domains/pcm-business-rules/parser.js";
+import { buildItems as buildPcmRulesItems } from "../src/domains/_confluence-sections/domain.js";
+import { parseSections } from "../src/domains/_confluence-sections/parser.js";
 
 const pcmHtml = readFileSync(new URL("./fixtures/pcm-page.html", import.meta.url), "utf8");
 const paymentsYaml = readFileSync(new URL("./fixtures/payments-spec.yml", import.meta.url), "utf8");

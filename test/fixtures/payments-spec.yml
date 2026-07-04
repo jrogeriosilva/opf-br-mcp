@@ -1,0 +1,41 @@
+openapi: 3.0.0
+info:
+  title: API Payments - Open Finance Brasil
+  version: 4.0.0
+paths:
+  /pix/payments:
+    post:
+      tags: [Payments]
+      summary: Criar iniciação de pagamento
+      description: Cria a iniciação de pagamento PIX consentida.
+      requestBody:
+        content:
+          application/jwt:
+            schema:
+              $ref: '#/components/schemas/CreatePixPayment'
+  /pix/payments/{paymentId}:
+    get:
+      tags: [Payments]
+      summary: Consultar pagamento
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+components:
+  schemas:
+    CreatePixPayment:
+      type: object
+      description: Payload de criação de pagamento PIX
+      required: [data]
+      properties:
+        data:
+          type: object
+    PixPayment:
+      type: object
+      description: Pagamento consultado
+      properties:
+        paymentId:
+          type: string
+          maxLength: 100

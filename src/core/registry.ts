@@ -7,6 +7,7 @@ import { automaticPaymentsV2Domain } from "../domains/automatic-payments-v2-open
 import { consentsV3Domain } from "../domains/consents-v3-openapi/index.js";
 import { pcmOpenapiDomain } from "../domains/pcm-openapi/index.js";
 import { pcmBusinessRulesDomain } from "../domains/pcm-business-rules/index.js";
+import { jornadaOtimizadaDomain } from "../domains/jornada-otimizada/index.js";
 
 export const domains: Domain[] = [
   pcmDomain,
@@ -17,4 +18,5 @@ export const domains: Domain[] = [
   consentsV3Domain,
   pcmOpenapiDomain,
   pcmBusinessRulesDomain,
+  jornadaOtimizadaDomain,
 ];

@@ -7,8 +7,8 @@ import { parseAdditionalInfoTables } from "../src/domains/pcm-additional-info/pa
 import { parseOpenApiSpec } from "../src/domains/_openapi/parser.js";
 import { parseOpenApiSpec as parseConsentsV3 } from "../src/domains/_openapi/parser.js";
 import { parseOpenApiSpec as parsePcmOpenapi } from "../src/domains/pcm-openapi/parser.js";
-import { buildItems as buildPcmRulesItems } from "../src/domains/pcm-business-rules/index.js";
-import { parseSections } from "../src/domains/pcm-business-rules/parser.js";
+import { buildItems as buildPcmRulesItems } from "../src/domains/_confluence-sections/domain.js";
+import { parseSections } from "../src/domains/_confluence-sections/parser.js";
 
 const pcmHtml = readFileSync(new URL("./fixtures/pcm-page.html", import.meta.url), "utf8");
 const paymentsYaml = readFileSync(new URL("./fixtures/payments-spec.yml", import.meta.url), "utf8");
@@ -23,6 +23,10 @@ const pcmOpenapiYaml = readFileSync(new URL("./fixtures/pcm-openapi-spec.yml", i
 const pcmBusinessRulesHtml = readFileSync(
   new URL("./fixtures/pcm-business-rules-page.html", import.meta.url),
   "utf8",
+);
+const jornadaOtimizadaHtml = readFileSync(
+  new URL("./fixtures/jornada-otimizada-page.html", import.meta.url),
+  "utf8"
 );
 
 // Todo domínio novo DEVE registrar aqui um builder de dados de fixture.
@@ -43,6 +47,11 @@ const fixtureData: Record<string, () => DomainData> = {
   "pcm-business-rules": () => ({
     items: buildPcmRulesItems([
       { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(pcmBusinessRulesHtml) },
+    ]),
+  }),
+  "jornada-otimizada": () => ({
+    items: buildPcmRulesItems([
+      { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(jornadaOtimizadaHtml) },
     ]),
   }),
 };

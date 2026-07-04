@@ -12,7 +12,7 @@ export async function fetchWithRetry(url: string, opts: RetryOptions): Promise<R
   for (let attempt = 0; attempt <= opts.retryDelaysMs.length; attempt++) {
     if (attempt > 0) await sleep(opts.retryDelaysMs[attempt - 1]);
     try {
-      const response = await fetch(url, { headers: opts.headers });
+      const response = await fetch(url, { headers: opts.headers, signal: AbortSignal.timeout(30_000) });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status} ${response.statusText} for ${url}`);
       }

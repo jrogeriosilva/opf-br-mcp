@@ -1,8 +1,8 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { isFresh, readCache, writeCache } from "./cache.js";
+import { cacheDir, isFresh, readCache, writeCache } from "./cache.js";
 
 let dir: string;
 
@@ -37,5 +37,11 @@ describe("cache", () => {
     expect(isFresh(entry, 24)).toBe(true);
     const daqui25h = new Date(Date.now() + 25 * 3600_000);
     expect(isFresh(entry, 24, daqui25h)).toBe(false);
+  });
+
+  it("readCache devolve null para JSON corrompido", () => {
+    mkdirSync(cacheDir(), { recursive: true });
+    writeFileSync(join(cacheDir(), "dominio-corrompido.json"), "{not json");
+    expect(readCache("dominio-corrompido")).toBeNull();
   });
 });

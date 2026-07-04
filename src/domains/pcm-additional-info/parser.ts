@@ -129,7 +129,7 @@ function splitArrayValue(value: string, key: string): string[] {
 function cellText($: cheerio.CheerioAPI, el: AnyNode): string {
   const clone = $(el).clone();
   clone.find("br").replaceWith("\n");
-  return clone.text().replace(/ /g, " ").trim();
+  return clone.text().replace(/ /g, " ").trim();
 }
 
 /**

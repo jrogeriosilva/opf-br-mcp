@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import type { DomainData } from "./types.js";
@@ -35,7 +35,10 @@ export function writeCache(domainId: string, data: DomainData, packageVersion: s
     data,
   };
   mkdirSync(cacheDir(), { recursive: true });
-  writeFileSync(cachePath(domainId), JSON.stringify(entry));
+  const finalPath = cachePath(domainId);
+  const tmpPath = `${finalPath}.${process.pid}.tmp`;
+  writeFileSync(tmpPath, JSON.stringify(entry));
+  renameSync(tmpPath, finalPath);
   return entry;
 }
 

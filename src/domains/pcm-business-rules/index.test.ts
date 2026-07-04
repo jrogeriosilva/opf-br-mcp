@@ -48,4 +48,35 @@ describe("pcmBusinessRulesDomain", () => {
     expect(item).not.toBeNull();
     expect(item!.content).toBe("Reporte conciliado com sucesso.");
   });
+
+  it("trunca o snippet de conteúdo longo mas getItem devolve o content completo", () => {
+    const data: DomainData = {
+      items: buildItems([
+        {
+          pageId: "99",
+          title: "Longa",
+          url: "http://x",
+          sections: [{ heading: "Longa", level: 2, content: "x".repeat(250) }],
+        },
+      ]),
+    };
+    const results = pcmBusinessRulesDomain.search(data, undefined, { heading: "Longa" });
+    expect(results).toHaveLength(1);
+    const snippet = (results[0] as { snippet: string }).snippet;
+    expect(snippet.endsWith("…")).toBe(true);
+    expect(snippet.length).toBeLessThanOrEqual(201);
+
+    const item = pcmBusinessRulesDomain.getItem(data, results[0].id);
+    expect(item).not.toBeNull();
+    expect(item!.content).toBe("x".repeat(250));
+    expect(item!.content).not.toContain("…");
+  });
+
+  it("filtro page casa no título da página e retorna vazio quando não casa", () => {
+    const matches = pcmBusinessRulesDomain.search(fixtureData(), undefined, { page: "Processamento" });
+    expect(matches.length).toBeGreaterThan(0);
+
+    const noMatch = pcmBusinessRulesDomain.search(fixtureData(), undefined, { page: "Inexistente" });
+    expect(noMatch).toEqual([]);
+  });
 });

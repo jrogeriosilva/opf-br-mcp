@@ -72,6 +72,7 @@ describe("opf-br-mcp server", () => {
         "payments-v4-openapi",
         "payments-v5-openapi",
         "enrollments-v2-openapi",
+        "automatic-payments-v2-openapi",
       ]);
     }
   });
@@ -85,6 +86,7 @@ describe("opf-br-mcp server", () => {
       "payments-v4-openapi",
       "payments-v5-openapi",
       "enrollments-v2-openapi",
+      "automatic-payments-v2-openapi",
     ]);
     expect(parsed[0].filters.map((f: { name: string }) => f.name)).toContain("field");
   });

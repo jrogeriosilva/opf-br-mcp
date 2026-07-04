@@ -7,6 +7,8 @@ import { parseAdditionalInfoTables } from "../src/domains/pcm-additional-info/pa
 import { parseOpenApiSpec } from "../src/domains/payments-v4-openapi/parser.js";
 import { parseOpenApiSpec as parseConsentsV3 } from "../src/domains/consents-v3-openapi/parser.js";
 import { parseOpenApiSpec as parsePcmOpenapi } from "../src/domains/pcm-openapi/parser.js";
+import { buildItems as buildPcmRulesItems } from "../src/domains/pcm-business-rules/index.js";
+import { parseSections } from "../src/domains/pcm-business-rules/parser.js";
 
 const pcmHtml = readFileSync(new URL("./fixtures/pcm-page.html", import.meta.url), "utf8");
 const paymentsYaml = readFileSync(new URL("./fixtures/payments-spec.yml", import.meta.url), "utf8");
@@ -18,6 +20,10 @@ const automaticPaymentsV2Yaml = readFileSync(
 );
 const consentsV3Yaml = readFileSync(new URL("./fixtures/consents-v3-spec.yml", import.meta.url), "utf8");
 const pcmOpenapiYaml = readFileSync(new URL("./fixtures/pcm-openapi-spec.yml", import.meta.url), "utf8");
+const pcmBusinessRulesHtml = readFileSync(
+  new URL("./fixtures/pcm-business-rules-page.html", import.meta.url),
+  "utf8",
+);
 
 // Todo domínio novo DEVE registrar aqui um builder de dados de fixture.
 const fixtureData: Record<string, () => DomainData> = {
@@ -34,6 +40,11 @@ const fixtureData: Record<string, () => DomainData> = {
   }),
   "consents-v3-openapi": () => ({ items: parseConsentsV3(consentsV3Yaml, "consents") }),
   "pcm-openapi": () => ({ items: parsePcmOpenapi(pcmOpenapiYaml, "pcm") }),
+  "pcm-business-rules": () => ({
+    items: buildPcmRulesItems([
+      { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(pcmBusinessRulesHtml) },
+    ]),
+  }),
 };
 
 describe.each(domains.map((d) => [d.id, d] as const))("contrato do domínio %s", (id, domain) => {

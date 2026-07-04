@@ -52,7 +52,7 @@ export const pcmDomain: Domain = {
   id: "pcm-additional-info",
   title: "PCM — Regras de obrigatoriedade do additionalInfo",
   description:
-    "Regras de preenchimento do campo additionalInfo das páginas PCM do Confluence do Open Finance Brasil " +
+    "Regras de preenchimento do campo additionalInfo das páginas PCM (Plataforma de Coleta de Métricas) do Confluence do Open Finance Brasil " +
     "(Iniciação de Pagamentos, Pagamentos Automáticos, Sem Redirecionamento, DC-*). " +
     "Cada item é um campo com regra, métodos, endpoints, versões, tamanho máximo e exemplo.",
   ttlHours: 24,

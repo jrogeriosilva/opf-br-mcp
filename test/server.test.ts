@@ -69,7 +69,7 @@ describe("opf-br-mcp server", () => {
       };
       expect(schema.properties?.domain?.enum, name).toEqual([
         "pcm-additional-info",
-        "payments-openapi",
+        "payments-v4-openapi",
       ]);
     }
   });
@@ -80,7 +80,7 @@ describe("opf-br-mcp server", () => {
     const parsed = JSON.parse(firstText(result));
     expect(parsed.map((d: { id: string }) => d.id)).toEqual([
       "pcm-additional-info",
-      "payments-openapi",
+      "payments-v4-openapi",
     ]);
     expect(parsed[0].filters.map((f: { name: string }) => f.name)).toContain("field");
   });
@@ -138,14 +138,14 @@ describe("opf-br-mcp server", () => {
 
   it("get_item devolve o item completo do cache", async () => {
     writeCache(
-      "payments-openapi",
+      "payments-v4-openapi",
       { items: [{ id: "payments:schema:X", type: "schema", name: "X", detail: { a: 1 } }] },
       "0.1.0"
     );
     const client = await connectedClient();
     const result = await client.callTool({
       name: "get_item",
-      arguments: { domain: "payments-openapi", id: "payments:schema:X" },
+      arguments: { domain: "payments-v4-openapi", id: "payments:schema:X" },
     });
     const parsed = JSON.parse(firstText(result));
     expect(parsed.detail).toEqual({ a: 1 });

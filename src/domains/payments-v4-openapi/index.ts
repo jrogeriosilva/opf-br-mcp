@@ -9,7 +9,7 @@ function summarize(item: Item): Item {
 }
 
 export const paymentsDomain: Domain = {
-  id: "payments-openapi",
+  id: "payments-v4-openapi",
   title: `API de Pagamentos — spec OpenAPI ${paymentsConfig.specVersion}`,
   description:
     "Spec OpenAPI oficial da API de Pagamentos (Pix) do Open Finance Brasil. " +

@@ -4,7 +4,7 @@ import type { DomainData } from "../src/core/types.js";
 import { domains } from "../src/core/registry.js";
 import { buildItems } from "../src/domains/pcm-additional-info/index.js";
 import { parseAdditionalInfoTables } from "../src/domains/pcm-additional-info/parser.js";
-import { parseOpenApiSpec } from "../src/domains/payments-openapi/parser.js";
+import { parseOpenApiSpec } from "../src/domains/payments-v4-openapi/parser.js";
 
 const pcmHtml = readFileSync(new URL("./fixtures/pcm-page.html", import.meta.url), "utf8");
 const paymentsYaml = readFileSync(new URL("./fixtures/payments-spec.yml", import.meta.url), "utf8");
@@ -16,7 +16,7 @@ const fixtureData: Record<string, () => DomainData> = {
       { pageId: "1", title: "Página Fixture", url: "u", fields: parseAdditionalInfoTables(pcmHtml) },
     ]),
   }),
-  "payments-openapi": () => ({ items: parseOpenApiSpec(paymentsYaml, "payments") }),
+  "payments-v4-openapi": () => ({ items: parseOpenApiSpec(paymentsYaml, "payments") }),
 };
 
 describe.each(domains.map((d) => [d.id, d] as const))("contrato do domínio %s", (id, domain) => {

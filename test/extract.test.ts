@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { paymentsDomain } from "../src/domains/payments-openapi/index.js";
+import { paymentsDomain } from "../src/domains/payments-v4-openapi/index.js";
 import { pcmConfig } from "../src/domains/pcm-additional-info/config.js";
 import { pcmDomain } from "../src/domains/pcm-additional-info/index.js";
 

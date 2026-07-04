@@ -8,7 +8,7 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | Domínio | Fonte | Conteúdo |
 |---|---|---|
 | `pcm-additional-info` | Confluence público OFB | Regras de obrigatoriedade do `additionalInfo` (PCM) |
-| `payments-openapi` | GitHub OpenBanking-Brasil/openapi | Spec OpenAPI 4.0.0 da API de Pagamentos |
+| `payments-v4-openapi` | GitHub OpenBanking-Brasil/openapi | Spec OpenAPI 4.0.0 da API de Pagamentos |
 
 ## Tools
 

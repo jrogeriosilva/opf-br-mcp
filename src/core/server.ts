@@ -31,15 +31,26 @@ function findDomain(id: string): Domain | undefined {
 const validIds = () => domains.map((d) => d.id).join(", ");
 
 export function createServer(): McpServer {
-  const server = new McpServer({ name: "opf-br-mcp", version: PACKAGE_VERSION });
+  const server = new McpServer(
+    { name: "opf-br-mcp", version: PACKAGE_VERSION },
+    {
+      instructions:
+        "Conhecimento regulatório do Open Finance Brasil. Fluxo: list_domains para descobrir " +
+        "domínios e filtros → search(domain, ...) para buscar → get_item(domain, id) para o " +
+        "registro completo. Os ids não são adivinháveis — sempre venha de search. A primeira " +
+        "consulta a um domínio extrai das fontes públicas e pode levar ~30s; as seguintes usam cache.",
+    }
+  );
 
   server.registerTool(
     "list_domains",
     {
+      title: "Listar domínios",
       description:
         "Lista os domínios de conhecimento do Open Finance Brasil disponíveis neste server, " +
         "com os filtros aceitos por cada um e o estado do cache local. " +
         "Comece por aqui; depois use search(domain, ...) e get_item(domain, id).",
+      annotations: { readOnlyHint: true, openWorldHint: false },
     },
     async () => {
       const out = domains.map((d) => {
@@ -60,6 +71,7 @@ export function createServer(): McpServer {
   server.registerTool(
     "search",
     {
+      title: "Buscar em um domínio",
       description:
         "Busca filtrada em um domínio. `filters` aceita as chaves listadas em list_domains " +
         "para o domínio (combinadas em AND); `query` busca substring nos campos textuais. " +
@@ -69,8 +81,15 @@ export function createServer(): McpServer {
         domain: z.string().describe("Id do domínio (ver list_domains)"),
         query: z.string().optional().describe("Substring em campos textuais"),
         filters: z.record(z.string()).optional().describe("Filtros específicos do domínio"),
-        limit: z.number().int().positive().optional().describe("Máx. de resultados (default 20)"),
+        limit: z
+          .number()
+          .int()
+          .min(1)
+          .max(100)
+          .default(20)
+          .describe("Máx. de resultados (1-100, default 20)"),
       },
+      annotations: { readOnlyHint: true, openWorldHint: true },
     },
     async ({ domain, query, filters, limit }) => {
       const d = findDomain(domain);
@@ -106,6 +125,7 @@ export function createServer(): McpServer {
   server.registerTool(
     "get_item",
     {
+      title: "Detalhar um item",
       description:
         "Devolve o registro completo de um item pelo `id` retornado por search " +
         "(no domínio payments-openapi inclui o nó integral da spec em `detail`).",
@@ -113,6 +133,7 @@ export function createServer(): McpServer {
         domain: z.string().describe("Id do domínio"),
         id: z.string().describe("Id do item (vindo de search)"),
       },
+      annotations: { readOnlyHint: true, openWorldHint: true },
     },
     async ({ domain, id }) => {
       const d = findDomain(domain);
@@ -133,12 +154,14 @@ export function createServer(): McpServer {
   server.registerTool(
     "refresh",
     {
+      title: "Re-extrair fontes",
       description:
         "Força re-extração das fontes públicas (ignora o TTL de 24h do cache). " +
         "Sem `domain`, atualiza todos. Use quando suspeitar de dados desatualizados.",
       inputSchema: {
         domain: z.string().optional().describe("Id do domínio; omita para todos"),
       },
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ domain }) => {
       const targets = domain ? domains.filter((d) => d.id === domain) : domains;

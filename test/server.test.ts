@@ -45,6 +45,17 @@ describe("opf-br-mcp server", () => {
     ]);
   });
 
+  it("tools de leitura anunciam readOnlyHint; refresh não", async () => {
+    const client = await connectedClient();
+    const { tools } = await client.listTools();
+    const byName = Object.fromEntries(tools.map((t) => [t.name, t]));
+    for (const name of ["list_domains", "search", "get_item"]) {
+      expect(byName[name].annotations?.readOnlyHint, name).toBe(true);
+    }
+    expect(byName.refresh.annotations?.readOnlyHint).toBe(false);
+    expect(byName.refresh.annotations?.idempotentHint).toBe(true);
+  });
+
   it("list_domains descreve domínios e filtros sem tocar a rede", async () => {
     const client = await connectedClient();
     const result = await client.callTool({ name: "list_domains", arguments: {} });

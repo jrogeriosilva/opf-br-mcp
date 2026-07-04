@@ -6,6 +6,7 @@ import { enrollmentsV2Domain } from "../domains/enrollments-v2-openapi/index.js"
 import { automaticPaymentsV2Domain } from "../domains/automatic-payments-v2-openapi/index.js";
 import { consentsV3Domain } from "../domains/consents-v3-openapi/index.js";
 import { pcmOpenapiDomain } from "../domains/pcm-openapi/index.js";
+import { pcmBusinessRulesDomain } from "../domains/pcm-business-rules/index.js";
 
 export const domains: Domain[] = [
   pcmDomain,
@@ -15,4 +16,5 @@ export const domains: Domain[] = [
   automaticPaymentsV2Domain,
   consentsV3Domain,
   pcmOpenapiDomain,
+  pcmBusinessRulesDomain,
 ];

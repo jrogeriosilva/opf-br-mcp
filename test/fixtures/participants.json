@@ -1,0 +1,33 @@
+[
+  {
+    "OrganisationId": "b43131be-6a7f-5bfb-b436-c3ac5c5c2dac",
+    "Status": "Active",
+    "OrganisationName": "EFI S.A. - INSTITUICAO DE PAGAMENTO",
+    "RegistrationNumber": "09089356000118",
+    "AuthorisationServers": [
+      {
+        "AuthorisationServerId": "as-1",
+        "CustomerFriendlyName": "Efí S.A.",
+        "ApiResources": [
+          { "ApiResourceId": "r1", "ApiFamilyType": "payments", "ApiVersion": "4.0.0", "Status": "Active" },
+          { "ApiResourceId": "r2", "ApiFamilyType": "payments-consents", "ApiVersion": "5.0.0", "Status": "Active" },
+          { "ApiResourceId": "r3", "ApiFamilyType": "payments", "ApiVersion": "4.0.0", "Status": "Active" }
+        ]
+      },
+      {
+        "AuthorisationServerId": "as-2",
+        "CustomerFriendlyName": "Efí Empresas",
+        "ApiResources": [
+          { "ApiResourceId": "r4", "ApiFamilyType": "automatic-payments", "ApiVersion": "2.0.0", "Status": "Active" }
+        ]
+      }
+    ]
+  },
+  {
+    "OrganisationId": "11111111-2222-3333-4444-555555555555",
+    "Status": "Inactive",
+    "OrganisationName": "INSTITUIÇÃO EXEMPLO CRÉDITO S.A.",
+    "RegistrationNumber": "12345678000199",
+    "AuthorisationServers": null
+  }
+]

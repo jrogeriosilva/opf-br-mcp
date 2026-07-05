@@ -18,6 +18,7 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | `jornada-otimizada` | Confluence público OFB | Regras da Jornada Otimizada (Orientações Gerais, Transferências Inteligentes, Jornada sem Redirecionamento) — item por seção |
 | `mqd` | Confluence público OFB | Motor de Qualidade de Dados (Especificação Técnica, Arquitetura, Documentação da API, Manual de Instalação, Endpoints Validados, FAQ, Troubleshooting) — item por seção |
 | `webhook-v1-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 1.3.0 da API de Webhook (notificações de mudança de estado: pagamentos, enrollments, pagamentos automáticos) |
+| `seguranca` | Confluence público OFB | Segurança do Open Finance Brasil (Perfil de Segurança, FAPI, DCR, CIBA, Padrão de Certificados, Assinaturas, Casos de Erro, Redirecionamento App-to-App, Glossário, Versionamento) — item por seção |
 
 ## Tools
 

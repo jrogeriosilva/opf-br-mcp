@@ -16,14 +16,18 @@ export async function fetchWithRetry(url: string, opts: RetryOptions): Promise<R
     if (attempt > 0) await sleep(opts.retryDelaysMs[attempt - 1]);
     const timeout = AbortSignal.timeout(30_000);
     const signal = opts.signal ? AbortSignal.any([opts.signal, timeout]) : timeout;
+    let response: Response;
     try {
-      const response = await fetch(url, { headers: opts.headers, signal });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status} ${response.statusText} for ${url}`);
-      }
-      return response;
+      response = await fetch(url, { headers: opts.headers, signal });
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
+      continue;
+    }
+    if (response.ok) return response;
+    lastError = new Error(`HTTP ${response.status} ${response.statusText} for ${url}`);
+    // 4xx (exceto 429) é permanente: re-tentar não muda o resultado
+    if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+      throw lastError;
     }
   }
   throw lastError ?? new Error(`requisição cancelada: ${url}`);

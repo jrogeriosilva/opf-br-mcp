@@ -47,4 +47,24 @@ describe("fetchWithRetry", () => {
     ).rejects.toThrow("ECONNRESET");
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it("não re-tenta 4xx (erro permanente)", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: false, status: 404, statusText: "Not Found" });
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(
+      fetchWithRetry("https://example.test/x", { retryDelaysMs: [0, 0] })
+    ).rejects.toThrow("HTTP 404");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("429 continua com retry", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 429, statusText: "Too Many Requests" })
+      .mockResolvedValueOnce({ ok: true, status: 200, statusText: "OK" });
+    vi.stubGlobal("fetch", fetchMock);
+    const res = await fetchWithRetry("https://example.test/x", { retryDelaysMs: [0] });
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 });

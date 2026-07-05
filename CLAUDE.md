@@ -22,7 +22,7 @@ Tests must never hit the network — parsers are tested against fixtures in `tes
 
 Two layers: a **domain-agnostic core** and pluggable **domains**. The server exposes only 4 generic tools (`list_domains`, `search`, `get_item`, `refresh`); adding knowledge means adding a domain, never a tool.
 
-- `src/core/types.ts` — the `Domain` contract: `extract()` (fetch + structure remote data), `search(data, query?, filters?)` (may return summaries, but every result has a stable `id`), `getItem(data, id)` (full record), plus `filters` metadata surfaced by `list_domains`.
+- `src/core/types.ts` — the `Domain` contract, a discriminated union: `ExtractedDomain` (`extract()` fetch + structure remote data, sync `search`/`getItem` over cached data, `ttlHours`) or `LiveDomain` (`live.search`/`live.getItem` hit the source on every call; no cache/refresh; `search` requires a query). Every result of either `search` has a stable `id`.
 - `src/core/registry.ts` — the flat list of registered domains; the only wiring point.
 - `src/core/data.ts` — lazy extraction orchestrator: serves fresh cache, else calls `extract()` and caches; if extraction fails but a (stale) cache exists, serves it with `stale: true` instead of erroring.
 - `src/core/cache.ts` — JSON cache per domain in `~/.cache/opf-br-mcp/` (respects `XDG_CACHE_HOME`), 24h TTL per domain, atomic write via tmp file + rename.
@@ -37,6 +37,7 @@ Two layers: a **domain-agnostic core** and pluggable **domains**. The server exp
 1. Create `src/domains/<id>/index.ts` exporting a `Domain` object.
 2. Register it in `src/core/registry.ts`.
 3. Add a fixture in `test/fixtures/` and a builder entry in the `fixtureData` map of `test/contract.test.ts` — the conformance suite (`describe.each` over the registry) then automatically validates the contract: valid metadata, unique ids from `search`, every search id resolvable by `getItem`, empty result for no-match queries. A domain without a registered fixture fails the suite.
+4. Live domains (no `extract`) register a fetch responder in the `liveFixtureFetch` map of `test/contract.test.ts` instead of `fixtureData`.
 
 ## Conventions
 

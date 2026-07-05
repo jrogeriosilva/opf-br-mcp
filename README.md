@@ -20,15 +20,21 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | `webhook-v1-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 1.3.0 da API de Webhook (notificações de mudança de estado: pagamentos, enrollments, pagamentos automáticos) |
 | `seguranca` | Confluence público OFB | Segurança do Open Finance Brasil (Perfil de Segurança, FAPI, DCR, CIBA, Padrão de Certificados, Assinaturas, Casos de Erro, Redirecionamento App-to-App, Glossário, Versionamento) — item por seção |
 | `participantes` | Diretório OFB (data.directory.openbankingbrasil.org.br) | Organizações participantes, marcas (authorisation servers) e famílias de API suportadas com versões — um item por organização |
+| `portal` | Confluence público OFB (busca ao vivo) | Busca CQL em todo o Portal do Desenvolvedor (espaço OF) — sem cache, `query` obrigatória; fallback quando os domínios específicos não cobrem o assunto |
 
 ## Tools
 
 - `list_domains()` — descoberta: domínios, filtros e estado do cache
-- `search(domain, query?, filters?, limit?)` — busca filtrada, retorno compacto
+- `search(domain, query?, filters?, limit?, offset?)` — busca filtrada, retorno compacto
 - `get_item(domain, id)` — registro completo
 - `refresh(domain?)` — força re-extração das fontes
 
 Fluxo recomendado para o agente: `list_domains` → `search` → `get_item`.
+
+Domínios marcados como `live` (ex.: `portal`) consultam a fonte a cada chamada:
+não têm cache nem `refresh`, e `search` exige `query`. Quando um `search` em
+domínio comum retorna 0 resultados, a resposta inclui um `hint` sugerindo o
+`portal`.
 
 ## Progressive disclosure (por que economiza contexto)
 

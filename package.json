@@ -4,7 +4,7 @@
   "description": "MCP server local com as regras do Open Finance Brasil (PCM additionalInfo, specs OpenAPI de Pagamentos)",
   "type": "module",
   "license": "MIT",
-  "author": "José Rogério <joserogerio.net@gmail.com>",
+  "author": "jrogeriosilva",
   "keywords": [
     "mcp",
     "model-context-protocol",

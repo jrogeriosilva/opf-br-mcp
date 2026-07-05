@@ -151,4 +151,27 @@ describe("opf-br-mcp server", () => {
     const parsed = JSON.parse(firstText(result));
     expect(parsed.detail).toEqual({ a: 1 });
   });
+
+  it("offset pagina os resultados do search", async () => {
+    writeCache(
+      "payments-v4-openapi",
+      {
+        items: [
+          { id: "payments:GET /a", type: "operation", path: "/a" },
+          { id: "payments:GET /b", type: "operation", path: "/b" },
+          { id: "payments:GET /c", type: "operation", path: "/c" },
+        ],
+      },
+      PACKAGE_VERSION
+    );
+    const client = await connectedClient();
+    const result = await client.callTool({
+      name: "search",
+      arguments: { domain: "payments-v4-openapi", limit: 2, offset: 2 },
+    });
+    const parsed = JSON.parse(firstText(result));
+    expect(parsed.matches).toBe(3);
+    expect(parsed.returned).toBe(1);
+    expect(parsed.results.map((r: { id: string }) => r.id)).toEqual(["payments:GET /c"]);
+  });
 });

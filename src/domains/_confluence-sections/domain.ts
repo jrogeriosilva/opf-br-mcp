@@ -1,6 +1,7 @@
 import { sleep } from "../../core/http.js";
 import { fetchConfluencePage } from "../../core/confluence.js";
 import type { Domain, DomainData, Item } from "../../core/types.js";
+import { matchesQuery, normalize } from "../../core/text.js";
 import { parseSections, type ConfluenceSection } from "./parser.js";
 
 const SNIPPET_LEN = 200;
@@ -95,19 +96,17 @@ export function createConfluenceSectionsDomain(config: ConfluenceSectionsConfig)
       return { items: buildItems(pages) };
     },
     search(data, query, filters = {}) {
-      const page = filters.page?.toLowerCase();
-      const heading = filters.heading?.toLowerCase();
-      const contains = filters.contains?.toLowerCase();
-      const q = query?.toLowerCase();
+      const page = filters.page ? normalize(filters.page) : undefined;
+      const heading = filters.heading ? normalize(filters.heading) : undefined;
+      const contains = filters.contains ? normalize(filters.contains) : undefined;
 
       return (data.items as ConfluenceSectionItem[])
         .filter((item) => {
-          if (page && !item.page.title.toLowerCase().includes(page)) return false;
-          if (heading && !item.heading.toLowerCase().includes(heading)) return false;
-          if (contains && !item.content.toLowerCase().includes(contains)) return false;
-          if (q) {
-            const haystack = `${item.heading} ${item.content}`.toLowerCase();
-            if (!haystack.includes(q)) return false;
+          if (page && !normalize(item.page.title).includes(page)) return false;
+          if (heading && !normalize(item.heading).includes(heading)) return false;
+          if (contains && !normalize(item.content).includes(contains)) return false;
+          if (query?.trim()) {
+            if (!matchesQuery(`${item.heading} ${item.content}`, query)) return false;
           }
           return true;
         })

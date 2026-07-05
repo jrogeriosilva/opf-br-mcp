@@ -1,5 +1,6 @@
 import { sleep } from "../../core/http.js";
 import type { Domain, DomainData, Item } from "../../core/types.js";
+import { matchesQuery, normalize } from "../../core/text.js";
 import { pcmConfig } from "./config.js";
 import { fetchConfluencePage } from "../../core/confluence.js";
 import { parseAdditionalInfoTables, type PcmField } from "./parser.js";
@@ -83,22 +84,21 @@ export const pcmDomain: Domain = {
   },
   search(data, query, filters = {}) {
     const field = filters.field?.trim().toLowerCase();
-    const contains = filters.contains?.toLowerCase();
+    const contains = filters.contains ? normalize(filters.contains) : undefined;
     const endpoint = filters.endpoint?.toLowerCase();
     const method = filters.method?.toUpperCase();
-    const page = filters.page?.toLowerCase();
-    const q = query?.toLowerCase();
+    const page = filters.page ? normalize(filters.page) : undefined;
 
     return (data.items as PcmItem[]).filter((item) => {
       const campo = String(item.campo ?? "");
-      if (page && !item.page.title.toLowerCase().includes(page)) return false;
+      if (page && !normalize(item.page.title).includes(page)) return false;
       if (field && campo.trim().toLowerCase() !== field) return false;
-      if (contains && !`${campo} ${item.definicao ?? ""}`.toLowerCase().includes(contains)) return false;
+      if (contains && !normalize(`${campo} ${item.definicao ?? ""}`).includes(contains)) return false;
       if (endpoint && !item.endpoints.some((e) => e.toLowerCase().includes(endpoint))) return false;
       if (method && !item.metodos.some((m) => m.toUpperCase() === method)) return false;
-      if (q) {
-        const haystack = `${campo} ${item.definicao ?? ""} ${item.regraDePreenchimento ?? ""}`.toLowerCase();
-        if (!haystack.includes(q)) return false;
+      if (query?.trim()) {
+        const haystack = `${campo} ${item.definicao ?? ""} ${item.regraDePreenchimento ?? ""}`;
+        if (!matchesQuery(haystack, query)) return false;
       }
       return true;
     });

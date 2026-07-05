@@ -58,4 +58,10 @@ describe("createOpenApiDomain", () => {
     expect(item).not.toBeNull();
     expect(item!.detail).toHaveProperty("properties");
   });
+
+  it("query combina termos com AND", () => {
+    // path "/pix/payments" contém os dois termos
+    expect(domain.search(fixtureData(), "pix payments").length).toBeGreaterThan(0);
+    expect(domain.search(fixtureData(), "pix zzz-inexistente")).toEqual([]);
+  });
 });

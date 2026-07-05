@@ -29,6 +29,7 @@ const jornadaOtimizadaHtml = readFileSync(
   "utf8"
 );
 const mqdHtml = readFileSync(new URL("./fixtures/mqd-page.html", import.meta.url), "utf8");
+const webhookYaml = readFileSync(new URL("./fixtures/webhook-v1-spec.yml", import.meta.url), "utf8");
 
 // Todo domínio novo DEVE registrar aqui um builder de dados de fixture.
 const fixtureData: Record<string, () => DomainData> = {
@@ -60,6 +61,7 @@ const fixtureData: Record<string, () => DomainData> = {
       { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(mqdHtml) },
     ]),
   }),
+  "webhook-v1-openapi": () => ({ items: parseOpenApiSpec(webhookYaml, "webhook") }),
 };
 
 describe.each(domains.map((d) => [d.id, d] as const))("contrato do domínio %s", (id, domain) => {

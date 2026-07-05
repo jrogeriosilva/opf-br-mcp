@@ -8,6 +8,7 @@ import { consentsV3Domain } from "../domains/consents-v3-openapi/index.js";
 import { pcmOpenapiDomain } from "../domains/pcm-openapi/index.js";
 import { pcmBusinessRulesDomain } from "../domains/pcm-business-rules/index.js";
 import { jornadaOtimizadaDomain } from "../domains/jornada-otimizada/index.js";
+import { mqdDomain } from "../domains/mqd/index.js";
 
 export const domains: Domain[] = [
   pcmDomain,
@@ -19,4 +20,5 @@ export const domains: Domain[] = [
   pcmOpenapiDomain,
   pcmBusinessRulesDomain,
   jornadaOtimizadaDomain,
+  mqdDomain,
 ];

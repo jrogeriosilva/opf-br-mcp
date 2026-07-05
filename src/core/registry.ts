@@ -11,6 +11,7 @@ import { jornadaOtimizadaDomain } from "../domains/jornada-otimizada/index.js";
 import { mqdDomain } from "../domains/mqd/index.js";
 import { webhookDomain } from "../domains/webhook-v1-openapi/index.js";
 import { segurancaDomain } from "../domains/seguranca/index.js";
+import { participantesDomain } from "../domains/participantes/index.js";
 
 export const domains: Domain[] = [
   pcmDomain,
@@ -25,4 +26,5 @@ export const domains: Domain[] = [
   mqdDomain,
   webhookDomain,
   segurancaDomain,
+  participantesDomain,
 ];

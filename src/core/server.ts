@@ -5,7 +5,7 @@ import { z } from "zod";
 import { readCache } from "./cache.js";
 import { getDomainData } from "./data.js";
 import { domains } from "./registry.js";
-import type { Domain, ExtractContext, Item } from "./types.js";
+import type { Domain, ExtractContext, ExtractedDomain, Item } from "./types.js";
 import { PACKAGE_VERSION } from "./version.js";
 
 function compact(item: Item): Item {
@@ -86,6 +86,9 @@ export function createServer(): McpServer {
     },
     async () => {
       const out = domains.map((d) => {
+        if (d.live) {
+          return { id: d.id, title: d.title, description: d.description, filters: d.filters, live: true };
+        }
         const cached = readCache(d.id);
         return {
           id: d.id,
@@ -146,16 +149,38 @@ export function createServer(): McpServer {
           );
         }
       }
+      const max = limit ?? 20;
+      const off = offset ?? 0;
+      if (d.live) {
+        if (!query?.trim()) {
+          return errorText(`O domínio ${domain} é busca ao vivo: informe \`query\`.`);
+        }
+        try {
+          const results = await d.live.search(query, filters, extractContext(extra));
+          const page = results.slice(off, off + max);
+          return text({ matches: results.length, returned: page.length, results: page.map(compact) });
+        } catch (err) {
+          return errorText(
+            `Falha na busca ao vivo em ${domain}: ${(err as Error).message}. ` +
+              `Tente novamente (domínios ao vivo não têm cache; refresh não se aplica).`
+          );
+        }
+      }
       try {
         const { data, stale, extractedAt } = await getDomainData(d, false, extractContext(extra));
         const results = d.search(data, query, filters);
-        const max = limit ?? 20;
-        const off = offset ?? 0;
         const page = results.slice(off, off + max);
         return text({
           matches: results.length,
           returned: page.length,
           ...(stale ? { stale: true, staleNote: `Fontes inacessíveis; usando cache de ${extractedAt}` } : {}),
+          ...(results.length === 0
+            ? {
+                hint:
+                  'Sem resultados; tente search(domain: "portal", query: ...) para buscar ao vivo ' +
+                  "em todo o Portal do Desenvolvedor.",
+              }
+            : {}),
           results: page.map(compact),
         });
       } catch (err) {
@@ -188,6 +213,17 @@ export function createServer(): McpServer {
     async ({ domain, id }, extra) => {
       const d = findDomain(domain);
       if (!d) return errorText(`Domínio desconhecido: "${domain}". Válidos: ${validIds()}`);
+      if (d.live) {
+        try {
+          const item = await d.live.getItem(id, extractContext(extra));
+          if (!item) {
+            return errorText(`Item não encontrado em ${domain}: "${id}". Use search para descobrir ids.`);
+          }
+          return text(item);
+        } catch (err) {
+          return errorText(`Falha ao obter dados de ${domain}: ${(err as Error).message}.`);
+        }
+      }
       try {
         const { data, stale, extractedAt } = await getDomainData(d, false, extractContext(extra));
         const item = d.getItem(data, id);
@@ -214,10 +250,14 @@ export function createServer(): McpServer {
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ domain }, extra) => {
-      const targets = domain ? domains.filter((d) => d.id === domain) : domains;
-      if (domain && targets.length === 0) {
-        return errorText(`Domínio desconhecido: "${domain}". Válidos: ${validIds()}`);
+      if (domain) {
+        const d = findDomain(domain);
+        if (!d) return errorText(`Domínio desconhecido: "${domain}". Válidos: ${validIds()}`);
+        if (d.live) return errorText(`O domínio ${domain} é busca ao vivo: não há cache para re-extrair.`);
       }
+      const targets = domains.filter(
+        (d): d is ExtractedDomain => !d.live && (!domain || d.id === domain)
+      );
       const report: Record<string, string> = {};
       for (const d of targets) {
         try {

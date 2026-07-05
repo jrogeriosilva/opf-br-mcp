@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { writeCache } from "./cache.js";
 import { getDomainData } from "./data.js";
 import { PACKAGE_VERSION } from "./version.js";
-import type { Domain } from "./types.js";
+import type { ExtractedDomain } from "./types.js";
 
 let dir: string;
 
@@ -19,7 +19,7 @@ afterEach(() => {
   rmSync(dir, { recursive: true, force: true });
 });
 
-function fakeDomain(extract: Domain["extract"], ttlHours = 24): Domain {
+function fakeDomain(extract: ExtractedDomain["extract"], ttlHours = 24): ExtractedDomain {
   return {
     id: "fake",
     title: "Fake",

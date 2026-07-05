@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import type { DomainData } from "../src/core/types.js";
+import type { DomainData, ExtractedDomain } from "../src/core/types.js";
 import { domains } from "../src/core/registry.js";
 import { buildItems } from "../src/domains/pcm-additional-info/index.js";
 import { parseAdditionalInfoTables } from "../src/domains/pcm-additional-info/parser.js";
@@ -73,7 +73,9 @@ const fixtureData: Record<string, () => DomainData> = {
   "participantes": () => ({ items: parseParticipants(participantsJson) }),
 };
 
-describe.each(domains.map((d) => [d.id, d] as const))("contrato do domínio %s", (id, domain) => {
+const extractDomains = domains.filter((d): d is ExtractedDomain => d.live === undefined);
+
+describe.each(extractDomains.map((d) => [d.id, d] as const))("contrato do domínio %s", (id, domain) => {
   it("tem metadados válidos", () => {
     expect(domain.id).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
     expect(domain.title.length).toBeGreaterThan(0);

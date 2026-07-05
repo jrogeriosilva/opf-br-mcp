@@ -1,5 +1,5 @@
 import { fetchWithRetry } from "../../core/http.js";
-import type { Domain, DomainData, Item } from "../../core/types.js";
+import type { DomainData, ExtractedDomain, Item } from "../../core/types.js";
 import { matchesQuery, normalize } from "../../core/text.js";
 import { pcmOpenapiConfig } from "./config.js";
 import { parseOpenApiSpec } from "./parser.js";
@@ -9,7 +9,7 @@ function summarize(item: Item): Item {
   return rest as Item;
 }
 
-export const pcmOpenapiDomain: Domain = {
+export const pcmOpenapiDomain: ExtractedDomain = {
   id: "pcm-openapi",
   title: `PCM — spec OpenAPI ${pcmOpenapiConfig.specVersion}`,
   description:

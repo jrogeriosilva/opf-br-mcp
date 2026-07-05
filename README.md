@@ -1,5 +1,8 @@
 # opf-br-mcp
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![npm](https://img.shields.io/npm/v/opf-br-mcp.svg)](https://www.npmjs.com/package/opf-br-mcp)
+
 MCP server local que dá a agentes de codificação (Claude Code, GitHub Copilot)
 acesso token-eficiente às regras do Open Finance Brasil.
 
@@ -62,30 +65,34 @@ tokens e só "paga" o payload integral quando pede um item nomeado.
 Dados: extraídos das fontes públicas na primeira consulta (lazy), cache em
 `~/.cache/opf-br-mcp/` com TTL de 24h. Sem rede, serve cache expirado com aviso.
 
-## Fase 1 — uso local (repo privado, sem npm)
+## Instalação
 
-```bash
-git clone <este-repo> && cd opf-br-mcp
-npm install && npm run build
-```
+Requer Node >= 20. O servidor roda via `npx`, sem clone nem build.
 
 Claude Code — `.mcp.json` na raiz do projeto consumidor:
 
 ```json
-{ "mcpServers": { "opf-br": { "command": "node", "args": ["/caminho/para/opf-br-mcp/dist/index.js"] } } }
+{ "mcpServers": { "opf-br": { "command": "npx", "args": ["-y", "opf-br-mcp"] } } }
 ```
 
 GitHub Copilot (VS Code) — `.vscode/mcp.json`:
 
 ```json
-{ "servers": { "opf-br": { "command": "node", "args": ["/caminho/para/opf-br-mcp/dist/index.js"] } } }
+{ "servers": { "opf-br": { "command": "npx", "args": ["-y", "opf-br-mcp"] } } }
 ```
 
-## Fase 2 — npm público (após validação)
+### Uso local (a partir do fonte)
 
-1. Remover `"private": true` do `package.json`.
-2. `npm publish --access public`.
-3. Trocar a config dos clients para `"command": "npx", "args": ["-y", "opf-br-mcp"]`.
+```bash
+git clone https://github.com/jrogeriosilva/opf-br-mcp.git && cd opf-br-mcp
+npm install && npm run build
+```
+
+E aponte o client para o build local:
+
+```json
+{ "mcpServers": { "opf-br": { "command": "node", "args": ["/caminho/para/opf-br-mcp/dist/index.js"] } } }
+```
 
 ## Adicionando um domínio novo
 

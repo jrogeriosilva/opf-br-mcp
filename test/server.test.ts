@@ -1,9 +1,9 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { writeCache } from "../src/core/cache.js";
 import { domains } from "../src/core/registry.js";
 import { PACKAGE_VERSION } from "../src/core/version.js";
@@ -24,7 +24,32 @@ beforeEach(() => {
 afterEach(() => {
   delete process.env.XDG_CACHE_HOME;
   rmSync(dir, { recursive: true, force: true });
+  vi.unstubAllGlobals();
 });
+
+const portalSearchJson = readFileSync(
+  new URL("./fixtures/portal-search.json", import.meta.url),
+  "utf8"
+);
+
+function stubPortalFetch() {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string | URL) => ({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: async () =>
+        String(url).includes("/rest/api/search")
+          ? JSON.parse(portalSearchJson)
+          : {
+              title: "Página",
+              body: { view: { value: "<h2>Seção</h2><p>Conteúdo da seção.</p>" } },
+              _links: { webui: "/spaces/OF/pages/1282310227" },
+            },
+    }))
+  );
+}
 
 async function connectedClient() {
   const server = createServer();
@@ -189,5 +214,52 @@ describe("opf-br-mcp server", () => {
     const parsed = JSON.parse(firstText(result));
     expect(parsed.matches).toBe(0);
     expect(parsed.hint).toContain("portal");
+  });
+
+  it("list_domains marca o portal como live, sem estado de cache", async () => {
+    const client = await connectedClient();
+    const parsed = JSON.parse(firstText(await client.callTool({ name: "list_domains", arguments: {} })));
+    const portal = parsed.find((d: { id: string }) => d.id === "portal");
+    expect(portal.live).toBe(true);
+    expect(portal).not.toHaveProperty("extractedAt");
+  });
+
+  it("search no portal consulta a fonte ao vivo", async () => {
+    stubPortalFetch();
+    const client = await connectedClient();
+    const result = await client.callTool({
+      name: "search",
+      arguments: { domain: "portal", query: "additionalInfo" },
+    });
+    const parsed = JSON.parse(firstText(result));
+    expect(parsed.matches).toBe(2);
+    expect(parsed.results[0].id).toBe("1282310227");
+    expect(parsed.results[0].excerpt).not.toContain("@@@hl@@@");
+  });
+
+  it("search no portal sem query retorna isError orientando", async () => {
+    const client = await connectedClient();
+    const result = await client.callTool({ name: "search", arguments: { domain: "portal" } });
+    expect(result.isError).toBe(true);
+    expect(firstText(result)).toContain("query");
+  });
+
+  it("get_item no portal devolve a página em seções", async () => {
+    stubPortalFetch();
+    const client = await connectedClient();
+    const result = await client.callTool({
+      name: "get_item",
+      arguments: { domain: "portal", id: "1282310227" },
+    });
+    const parsed = JSON.parse(firstText(result));
+    expect(parsed.sections.length).toBeGreaterThan(0);
+    expect(parsed.sections[0].heading).toBe("Seção");
+  });
+
+  it("refresh no portal explica que domínio live não tem cache", async () => {
+    const client = await connectedClient();
+    const result = await client.callTool({ name: "refresh", arguments: { domain: "portal" } });
+    expect(result.isError).toBe(true);
+    expect(firstText(result)).toContain("ao vivo");
   });
 });

@@ -15,7 +15,12 @@ export async function getDomainData(
   ctx?: ExtractContext
 ): Promise<DomainDataResult> {
   const cached = readCache(domain.id);
-  if (!force && cached && isFresh(cached, domain.ttlHours)) {
+  if (
+    !force &&
+    cached &&
+    cached.packageVersion === PACKAGE_VERSION &&
+    isFresh(cached, domain.ttlHours)
+  ) {
     return { data: cached.data, extractedAt: cached.extractedAt, stale: false };
   }
   try {

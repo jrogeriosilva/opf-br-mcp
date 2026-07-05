@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { writeCache } from "./cache.js";
 import { getDomainData } from "./data.js";
+import { PACKAGE_VERSION } from "./version.js";
 import type { Domain } from "./types.js";
 
 let dir: string;
@@ -41,7 +42,7 @@ describe("getDomainData", () => {
   });
 
   it("usa cache fresco sem chamar extract", async () => {
-    writeCache("fake", { items: [{ id: "cached" }] }, "0.1.0");
+    writeCache("fake", { items: [{ id: "cached" }] }, PACKAGE_VERSION);
     const extract = vi.fn();
     const result = await getDomainData(fakeDomain(extract));
     expect(result.data.items[0].id).toBe("cached");
@@ -49,16 +50,32 @@ describe("getDomainData", () => {
   });
 
   it("force=true re-extrai mesmo com cache fresco", async () => {
-    writeCache("fake", { items: [{ id: "cached" }] }, "0.1.0");
+    writeCache("fake", { items: [{ id: "cached" }] }, PACKAGE_VERSION);
     const extract = vi.fn().mockResolvedValue({ items: [{ id: "novo" }] });
     const result = await getDomainData(fakeDomain(extract), true);
     expect(result.data.items[0].id).toBe("novo");
   });
 
   it("cache expirado + extract falhando → devolve stale", async () => {
-    writeCache("fake", { items: [{ id: "velho" }] }, "0.1.0");
+    writeCache("fake", { items: [{ id: "velho" }] }, PACKAGE_VERSION);
     const extract = vi.fn().mockRejectedValue(new Error("offline"));
     const result = await getDomainData(fakeDomain(extract, 0)); // TTL 0 = sempre expirado
+    expect(result.stale).toBe(true);
+    expect(result.data.items[0].id).toBe("velho");
+  });
+
+  it("cache de versão antiga do pacote é re-extraído", async () => {
+    writeCache("fake", { items: [{ id: "velho" }] }, "0.0.1");
+    const extract = vi.fn().mockResolvedValue({ items: [{ id: "novo" }] });
+    const result = await getDomainData(fakeDomain(extract));
+    expect(result.data.items[0].id).toBe("novo");
+    expect(result.stale).toBe(false);
+  });
+
+  it("cache de versão antiga ainda serve como fallback stale", async () => {
+    writeCache("fake", { items: [{ id: "velho" }] }, "0.0.1");
+    const extract = vi.fn().mockRejectedValue(new Error("offline"));
+    const result = await getDomainData(fakeDomain(extract));
     expect(result.stale).toBe(true);
     expect(result.data.items[0].id).toBe("velho");
   });

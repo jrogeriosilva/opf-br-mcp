@@ -6,6 +6,7 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { writeCache } from "../src/core/cache.js";
 import { domains } from "../src/core/registry.js";
+import { PACKAGE_VERSION } from "../src/core/version.js";
 import { createServer } from "../src/core/server.js";
 
 // Ids esperados derivados da registry: o teste verifica que o servidor repassa
@@ -101,7 +102,7 @@ describe("opf-br-mcp server", () => {
           },
         ],
       },
-      "0.1.0"
+      PACKAGE_VERSION
     );
     const client = await connectedClient();
     const result = await client.callTool({
@@ -140,7 +141,7 @@ describe("opf-br-mcp server", () => {
     writeCache(
       "payments-v4-openapi",
       { items: [{ id: "payments:schema:X", type: "schema", name: "X", detail: { a: 1 } }] },
-      "0.1.0"
+      PACKAGE_VERSION
     );
     const client = await connectedClient();
     const result = await client.callTool({

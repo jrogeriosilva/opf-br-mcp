@@ -81,6 +81,27 @@ GitHub Copilot (VS Code) — `.vscode/mcp.json`:
 { "servers": { "opf-br": { "command": "npx", "args": ["-y", "opf-br-mcp"] } } }
 ```
 
+Claude Desktop — `claude_desktop_config.json` (Settings → Developer → Edit Config):
+
+```json
+{ "mcpServers": { "opf-br": { "command": "npx", "args": ["-y", "opf-br-mcp"] } } }
+```
+
+### Windows
+
+No Windows, o client não consegue executar `npx` diretamente (é o shim
+`npx.cmd`) e acaba abrindo um `cmd.exe` interativo, cujo banner
+(`Microsoft Windows [Version ...]`) vaza para o canal stdio e corrompe o
+protocolo JSON-RPC — o servidor falha na conexão com erros de JSON inválido.
+Envolva o comando em `cmd /c` para rodá-lo sem shell interativo:
+
+```json
+{ "mcpServers": { "opf-br": { "command": "cmd", "args": ["/c", "npx", "-y", "opf-br-mcp"] } } }
+```
+
+Vale para qualquer client no Windows (Claude Desktop, Claude Code, VS Code) —
+ajuste apenas a chave externa (`mcpServers` ou `servers`).
+
 ### Uso local (a partir do fonte)
 
 ```bash

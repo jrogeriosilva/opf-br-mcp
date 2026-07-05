@@ -28,6 +28,7 @@ const jornadaOtimizadaHtml = readFileSync(
   new URL("./fixtures/jornada-otimizada-page.html", import.meta.url),
   "utf8"
 );
+const mqdHtml = readFileSync(new URL("./fixtures/mqd-page.html", import.meta.url), "utf8");
 
 // Todo domínio novo DEVE registrar aqui um builder de dados de fixture.
 const fixtureData: Record<string, () => DomainData> = {
@@ -52,6 +53,11 @@ const fixtureData: Record<string, () => DomainData> = {
   "jornada-otimizada": () => ({
     items: buildPcmRulesItems([
       { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(jornadaOtimizadaHtml) },
+    ]),
+  }),
+  "mqd": () => ({
+    items: buildPcmRulesItems([
+      { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(mqdHtml) },
     ]),
   }),
 };

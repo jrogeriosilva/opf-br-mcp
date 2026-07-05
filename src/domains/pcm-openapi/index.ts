@@ -1,5 +1,6 @@
 import { fetchWithRetry } from "../../core/http.js";
 import type { Domain, DomainData, Item } from "../../core/types.js";
+import { matchesQuery, normalize } from "../../core/text.js";
 import { pcmOpenapiConfig } from "./config.js";
 import { parseOpenApiSpec } from "./parser.js";
 
@@ -34,22 +35,20 @@ export const pcmOpenapiDomain: Domain = {
     return { items: parseOpenApiSpec(yamlText, pcmOpenapiConfig.specName) };
   },
   search(data, query, filters = {}) {
-    const path = filters.path?.toLowerCase();
+    const path = filters.path ? normalize(filters.path) : undefined;
     const method = filters.method?.toUpperCase();
-    const schema = filters.schema?.toLowerCase();
-    const q = query?.toLowerCase();
+    const schema = filters.schema ? normalize(filters.schema) : undefined;
 
     return data.items
       .filter((item) => {
-        if (path && !String(item.path ?? "").toLowerCase().includes(path)) return false;
+        if (path && !normalize(String(item.path ?? "")).includes(path)) return false;
         if (method && item.method !== method) return false;
-        if (schema && !String(item.name ?? "").toLowerCase().includes(schema)) return false;
-        if (q) {
+        if (schema && !normalize(String(item.name ?? "")).includes(schema)) return false;
+        if (query?.trim()) {
           const haystack = [item.path, item.summary, item.description, item.name]
             .map((v) => String(v ?? ""))
-            .join(" ")
-            .toLowerCase();
-          if (!haystack.includes(q)) return false;
+            .join(" ");
+          if (!matchesQuery(haystack, query)) return false;
         }
         return true;
       })

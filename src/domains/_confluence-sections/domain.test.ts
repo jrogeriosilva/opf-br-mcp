@@ -94,4 +94,23 @@ describe("createConfluenceSectionsDomain", () => {
     const noMatch = domain.search(fixtureData(), undefined, { page: "Inexistente" });
     expect(noMatch).toEqual([]);
   });
+
+  it("query ignora acentos e combina termos com AND", () => {
+    const data: DomainData = {
+      items: buildItems([
+        {
+          pageId: "7",
+          title: "Página",
+          url: "http://x",
+          sections: [
+            { heading: "Vínculo de Dispositivo", level: 2, content: "Regras de vínculo por aproximação." },
+            { heading: "Outra seção", level: 2, content: "Nada relacionado." },
+          ],
+        },
+      ]),
+    };
+    expect(domain.search(data, "vinculo dispositivo")).toHaveLength(1);
+    expect(domain.search(data, "vinculo inexistente")).toEqual([]);
+    expect(domain.search(data, undefined, { heading: "vinculo" })).toHaveLength(1);
+  });
 });

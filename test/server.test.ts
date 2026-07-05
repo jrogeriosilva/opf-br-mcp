@@ -174,4 +174,20 @@ describe("opf-br-mcp server", () => {
     expect(parsed.returned).toBe(1);
     expect(parsed.results.map((r: { id: string }) => r.id)).toEqual(["payments:GET /c"]);
   });
+
+  it("search sem resultados inclui hint apontando o domínio portal", async () => {
+    writeCache(
+      "payments-v4-openapi",
+      { items: [{ id: "payments:GET /a", type: "operation", path: "/a" }] },
+      PACKAGE_VERSION
+    );
+    const client = await connectedClient();
+    const result = await client.callTool({
+      name: "search",
+      arguments: { domain: "payments-v4-openapi", query: "zzz-sem-resultado" },
+    });
+    const parsed = JSON.parse(firstText(result));
+    expect(parsed.matches).toBe(0);
+    expect(parsed.hint).toContain("portal");
+  });
 });

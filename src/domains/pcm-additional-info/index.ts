@@ -1,5 +1,5 @@
 import { sleep } from "../../core/http.js";
-import type { Domain, DomainData, Item } from "../../core/types.js";
+import type { DomainData, ExtractedDomain, Item } from "../../core/types.js";
 import { matchesQuery, normalize } from "../../core/text.js";
 import { pcmConfig } from "./config.js";
 import { fetchConfluencePage } from "../../core/confluence.js";
@@ -49,7 +49,7 @@ export function buildItems(pages: PcmPage[]): Item[] {
   return items;
 }
 
-export const pcmDomain: Domain = {
+export const pcmDomain: ExtractedDomain = {
   id: "pcm-additional-info",
   title: "PCM — Regras de obrigatoriedade do additionalInfo",
   description:

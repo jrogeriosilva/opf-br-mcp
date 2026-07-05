@@ -1,5 +1,5 @@
 import { isFresh, readCache, writeCache } from "./cache.js";
-import type { Domain, DomainData, ExtractContext } from "./types.js";
+import type { DomainData, ExtractContext, ExtractedDomain } from "./types.js";
 import { PACKAGE_VERSION } from "./version.js";
 
 export interface DomainDataResult {
@@ -10,7 +10,7 @@ export interface DomainDataResult {
 }
 
 export async function getDomainData(
-  domain: Domain,
+  domain: ExtractedDomain,
   force = false,
   ctx?: ExtractContext
 ): Promise<DomainDataResult> {

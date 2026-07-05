@@ -1,5 +1,5 @@
 import { fetchWithRetry } from "../../core/http.js";
-import type { Domain, DomainData, Item } from "../../core/types.js";
+import type { DomainData, ExtractedDomain, Item } from "../../core/types.js";
 import { matchesQuery, normalize } from "../../core/text.js";
 import { parseOpenApiSpec } from "./parser.js";
 
@@ -20,7 +20,7 @@ function summarize(item: Item): Item {
   return rest as Item;
 }
 
-export function createOpenApiDomain(config: OpenApiDomainConfig): Domain {
+export function createOpenApiDomain(config: OpenApiDomainConfig): ExtractedDomain {
   return {
     id: config.id,
     title: config.title,

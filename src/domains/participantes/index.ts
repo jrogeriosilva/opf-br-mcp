@@ -1,6 +1,6 @@
 import { fetchWithRetry } from "../../core/http.js";
 import { matchesQuery, normalize } from "../../core/text.js";
-import type { Domain, DomainData, Item } from "../../core/types.js";
+import type { DomainData, ExtractedDomain, Item } from "../../core/types.js";
 import { participantesConfig } from "./config.js";
 import { parseParticipants, type ParticipantItem } from "./parser.js";
 
@@ -9,7 +9,7 @@ function summarize(item: Item): Item {
   return rest as Item;
 }
 
-export const participantesDomain: Domain = {
+export const participantesDomain: ExtractedDomain = {
   id: participantesConfig.id,
   title: participantesConfig.title,
   description: participantesConfig.description,

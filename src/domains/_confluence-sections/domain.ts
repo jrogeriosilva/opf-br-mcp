@@ -1,6 +1,6 @@
 import { sleep } from "../../core/http.js";
 import { fetchConfluencePage } from "../../core/confluence.js";
-import type { Domain, DomainData, Item } from "../../core/types.js";
+import type { DomainData, ExtractedDomain, Item } from "../../core/types.js";
 import { matchesQuery, normalize } from "../../core/text.js";
 import { parseSections, type ConfluenceSection } from "./parser.js";
 
@@ -66,7 +66,7 @@ function summarize(item: ConfluenceSectionItem): Item {
   return { ...rest, snippet };
 }
 
-export function createConfluenceSectionsDomain(config: ConfluenceSectionsConfig): Domain {
+export function createConfluenceSectionsDomain(config: ConfluenceSectionsConfig): ExtractedDomain {
   return {
     id: config.id,
     title: config.title,

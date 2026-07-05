@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
-import type { DomainData, ExtractedDomain } from "../src/core/types.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { DomainData, ExtractedDomain, LiveDomain } from "../src/core/types.js";
 import { domains } from "../src/core/registry.js";
 import { buildItems } from "../src/domains/pcm-additional-info/index.js";
 import { parseAdditionalInfoTables } from "../src/domains/pcm-additional-info/parser.js";
@@ -110,5 +110,63 @@ describe.each(extractDomains.map((d) => [d.id, d] as const))("contrato do domín
   it("query sem correspondência devolve lista vazia", () => {
     const data = fixtureData[id]();
     expect(domain.search(data, "zzz-string-que-nao-existe-em-lugar-nenhum")).toEqual([]);
+  });
+});
+
+const portalSearchJson = readFileSync(new URL("./fixtures/portal-search.json", import.meta.url), "utf8");
+
+// Todo domínio live novo DEVE registrar aqui um responder de fetch por URL.
+const liveFixtureFetch: Record<string, (url: string) => unknown> = {
+  portal: (url) =>
+    url.includes("/rest/api/search")
+      ? JSON.parse(portalSearchJson)
+      : {
+          title: "Página Fixture",
+          body: { view: { value: segurancaHtml } },
+          _links: { webui: "/spaces/OF/pages/1" },
+        },
+};
+
+const liveDomains = domains.filter((d): d is LiveDomain => d.live !== undefined);
+
+describe.each(liveDomains.map((d) => [d.id, d] as const))("contrato do domínio live %s", (id, domain) => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  function stubFetch() {
+    const respond = liveFixtureFetch[id];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string | URL) => ({
+        ok: true,
+        status: 200,
+        statusText: "OK",
+        json: async () => respond(String(url)),
+      }))
+    );
+  }
+
+  it("tem metadados válidos", () => {
+    expect(domain.id).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
+    expect(domain.title.length).toBeGreaterThan(0);
+    expect(domain.description.length).toBeGreaterThan(20);
+  });
+
+  it("tem fixture live registrada para os testes de conformidade", () => {
+    expect(liveFixtureFetch[id], `registre fixture live para ${id} em test/contract.test.ts`).toBeDefined();
+  });
+
+  it("live.search devolve itens com ids únicos", async () => {
+    stubFetch();
+    const results = await domain.live.search("additionalInfo");
+    expect(results.length).toBeGreaterThan(0);
+    const ids = results.map((r) => r.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("live.getItem resolve todo id devolvido por live.search", async () => {
+    stubFetch();
+    for (const result of await domain.live.search("additionalInfo")) {
+      expect(await domain.live.getItem(result.id)).not.toBeNull();
+    }
   });
 });

@@ -12,6 +12,7 @@ import { mqdDomain } from "../domains/mqd/index.js";
 import { webhookDomain } from "../domains/webhook-v1-openapi/index.js";
 import { segurancaDomain } from "../domains/seguranca/index.js";
 import { participantesDomain } from "../domains/participantes/index.js";
+import { portalDomain } from "../domains/portal/index.js";
 
 export const domains: Domain[] = [
   pcmDomain,
@@ -27,4 +28,5 @@ export const domains: Domain[] = [
   webhookDomain,
   segurancaDomain,
   participantesDomain,
+  portalDomain,
 ];

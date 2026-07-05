@@ -1,0 +1,19 @@
+{
+  "results": [
+    {
+      "content": { "id": "1282310227", "type": "page", "title": "Especificações additionalInfo Descontinuadas" },
+      "title": "Especificações additionalInfo Descontinuadas",
+      "excerpt": "Planilha de @@@hl@@@additionalInfo@@@endhl@@@ (v20)",
+      "url": "/spaces/OF/pages/1282310227/Especifica+es+additionalInfo+Descontinuadas",
+      "lastModified": "2025-11-18T13:52:28.000Z"
+    },
+    {
+      "content": { "id": "873333409", "type": "page", "title": "Histórico - Tabela de AdditionalInfo PIX Automático" },
+      "title": "Histórico - Tabela de AdditionalInfo PIX Automático",
+      "excerpt": "Esta é a documentação legada, e deve ser consultada apenas para fins de histórico.",
+      "url": "/spaces/OF/pages/873333409/Hist+rico+-+Tabela+de+AdditionalInfo+PIX+Autom+tico",
+      "lastModified": "2025-10-01T10:00:00.000Z"
+    },
+    { "content": {}, "title": "sem content.id — deve ser ignorado", "excerpt": "", "url": "/x" }
+  ]
+}

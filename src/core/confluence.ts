@@ -8,6 +8,7 @@ const HEADERS = {
 };
 
 interface ConfluenceResponse {
+  title?: string;
   body?: { view?: { value?: string } };
   _links?: { webui?: string };
 }
@@ -21,12 +22,13 @@ export async function fetchConfluencePage(
   pageId: string,
   retryDelaysMs: number[],
   signal?: AbortSignal
-): Promise<{ html: string; url: string }> {
+): Promise<{ html: string; title?: string; url: string }> {
   const apiUrl = `${baseUrl}/wiki/rest/api/content/${pageId}?expand=body.view`;
   const response = await fetchWithRetry(apiUrl, { retryDelaysMs, headers: HEADERS, signal });
   const json = (await response.json()) as ConfluenceResponse;
   return {
     html: json.body?.view?.value ?? "",
+    title: json.title,
     url: `${baseUrl}/wiki${json._links?.webui ?? ""}`,
   };
 }

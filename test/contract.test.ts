@@ -9,6 +9,7 @@ import { parseOpenApiSpec as parseConsentsV3 } from "../src/domains/_openapi/par
 import { parseOpenApiSpec as parsePcmOpenapi } from "../src/domains/pcm-openapi/parser.js";
 import { buildItems as buildPcmRulesItems } from "../src/domains/_confluence-sections/domain.js";
 import { parseSections } from "../src/domains/_confluence-sections/parser.js";
+import { parseParticipants } from "../src/domains/participantes/parser.js";
 
 const pcmHtml = readFileSync(new URL("./fixtures/pcm-page.html", import.meta.url), "utf8");
 const paymentsYaml = readFileSync(new URL("./fixtures/payments-spec.yml", import.meta.url), "utf8");
@@ -31,6 +32,7 @@ const jornadaOtimizadaHtml = readFileSync(
 const mqdHtml = readFileSync(new URL("./fixtures/mqd-page.html", import.meta.url), "utf8");
 const segurancaHtml = readFileSync(new URL("./fixtures/seguranca-page.html", import.meta.url), "utf8");
 const webhookYaml = readFileSync(new URL("./fixtures/webhook-v1-spec.yml", import.meta.url), "utf8");
+const participantsJson = readFileSync(new URL("./fixtures/participants.json", import.meta.url), "utf8");
 
 // Todo domínio novo DEVE registrar aqui um builder de dados de fixture.
 const fixtureData: Record<string, () => DomainData> = {
@@ -68,6 +70,7 @@ const fixtureData: Record<string, () => DomainData> = {
     ]),
   }),
   "webhook-v1-openapi": () => ({ items: parseOpenApiSpec(webhookYaml, "webhook") }),
+  "participantes": () => ({ items: parseParticipants(participantsJson) }),
 };
 
 describe.each(domains.map((d) => [d.id, d] as const))("contrato do domínio %s", (id, domain) => {

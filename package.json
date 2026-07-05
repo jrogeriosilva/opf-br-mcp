@@ -2,8 +2,27 @@
   "name": "opf-br-mcp",
   "version": "0.4.0",
   "description": "MCP server local com as regras do Open Finance Brasil (PCM additionalInfo, specs OpenAPI de Pagamentos)",
-  "private": true,
   "type": "module",
+  "license": "MIT",
+  "author": "José Rogério <joserogerio.net@gmail.com>",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "open-finance",
+    "open-banking",
+    "open-finance-brasil",
+    "openapi",
+    "pcm",
+    "pix"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jrogeriosilva/opf-br-mcp.git"
+  },
+  "homepage": "https://github.com/jrogeriosilva/opf-br-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/jrogeriosilva/opf-br-mcp/issues"
+  },
   "bin": {
     "opf-br-mcp": "dist/index.js"
   },

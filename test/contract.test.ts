@@ -29,6 +29,7 @@ const jornadaOtimizadaHtml = readFileSync(
   "utf8"
 );
 const mqdHtml = readFileSync(new URL("./fixtures/mqd-page.html", import.meta.url), "utf8");
+const segurancaHtml = readFileSync(new URL("./fixtures/seguranca-page.html", import.meta.url), "utf8");
 const webhookYaml = readFileSync(new URL("./fixtures/webhook-v1-spec.yml", import.meta.url), "utf8");
 
 // Todo domínio novo DEVE registrar aqui um builder de dados de fixture.
@@ -59,6 +60,11 @@ const fixtureData: Record<string, () => DomainData> = {
   "mqd": () => ({
     items: buildPcmRulesItems([
       { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(mqdHtml) },
+    ]),
+  }),
+  "seguranca": () => ({
+    items: buildPcmRulesItems([
+      { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(segurancaHtml) },
     ]),
   }),
   "webhook-v1-openapi": () => ({ items: parseOpenApiSpec(webhookYaml, "webhook") }),

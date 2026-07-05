@@ -120,6 +120,12 @@ export function createServer(): McpServer {
           .max(100)
           .default(20)
           .describe("Máx. de resultados (1-100, default 20)"),
+        offset: z
+          .number()
+          .int()
+          .min(0)
+          .default(0)
+          .describe("Pula os N primeiros resultados (paginação com limit)"),
       },
       annotations: {
         readOnlyHint: true,
@@ -128,7 +134,7 @@ export function createServer(): McpServer {
         openWorldHint: true,
       },
     },
-    async ({ domain, query, filters, limit }, extra) => {
+    async ({ domain, query, filters, limit, offset }, extra) => {
       const d = findDomain(domain);
       if (!d) return errorText(`Domínio desconhecido: "${domain}". Válidos: ${validIds()}`);
       if (filters) {
@@ -144,11 +150,13 @@ export function createServer(): McpServer {
         const { data, stale, extractedAt } = await getDomainData(d, false, extractContext(extra));
         const results = d.search(data, query, filters);
         const max = limit ?? 20;
+        const off = offset ?? 0;
+        const page = results.slice(off, off + max);
         return text({
           matches: results.length,
-          returned: Math.min(max, results.length),
+          returned: page.length,
           ...(stale ? { stale: true, staleNote: `Fontes inacessíveis; usando cache de ${extractedAt}` } : {}),
-          results: results.slice(0, max).map(compact),
+          results: page.map(compact),
         });
       } catch (err) {
         return errorText(
@@ -165,7 +173,7 @@ export function createServer(): McpServer {
       title: "Detalhar um item",
       description:
         "Devolve o registro completo de um item pelo `id` retornado por search " +
-        "(no domínio payments-v4-openapi inclui o nó integral da spec em `detail`).",
+        "(nos domínios *-openapi inclui o nó integral da spec em `detail`).",
       inputSchema: {
         domain: domainIdSchema,
         id: z.string().describe("Id do item (vindo de search)"),

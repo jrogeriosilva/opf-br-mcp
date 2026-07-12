@@ -30,7 +30,7 @@ describe("createOpenApiDomain", () => {
   it("propaga id, title e filtros com o pathExample", () => {
     expect(domain.id).toBe("test-openapi");
     expect(domain.title).toBe("Spec de teste");
-    expect(domain.ttlHours).toBe(24);
+    expect(domain.ttlHours).toBe(72);
     expect(domain.filters[0].description).toContain("/pix/payments");
   });
 

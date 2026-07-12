@@ -71,7 +71,7 @@ export function createConfluenceSectionsDomain(config: ConfluenceSectionsConfig)
     id: config.id,
     title: config.title,
     description: config.description,
-    ttlHours: 24,
+    ttlHours: 72,
     filters: [
       { name: "page", description: "Substring no título da página Confluence" },
       { name: "heading", description: "Substring no título da seção (heading)" },

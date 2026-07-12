@@ -243,7 +243,7 @@ export function createServer(): McpServer {
     {
       title: "Re-extrair fontes",
       description:
-        "Força re-extração das fontes públicas (ignora o TTL de 24h do cache). " +
+        "Força re-extração das fontes públicas (ignora o TTL de 72h do cache). " +
         "Sem `domain`, atualiza todos. Use quando suspeitar de dados desatualizados.",
       inputSchema: {
         domain: domainIdSchema.optional().describe("Id do domínio; omita para todos"),

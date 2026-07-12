@@ -63,7 +63,7 @@ de um `search`. Assim o agente localiza o endpoint/schema certo pagando poucos
 tokens e só "paga" o payload integral quando pede um item nomeado.
 
 Dados: extraídos das fontes públicas na primeira consulta (lazy), cache em
-`~/.cache/opf-br-mcp/` com TTL de 24h. Sem rede, serve cache expirado com aviso.
+`~/.cache/opf-br-mcp/` com TTL de 72h. Sem rede, serve cache expirado com aviso.
 
 ## Instalação
 

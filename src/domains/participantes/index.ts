@@ -13,7 +13,7 @@ export const participantesDomain: ExtractedDomain = {
   id: participantesConfig.id,
   title: participantesConfig.title,
   description: participantesConfig.description,
-  ttlHours: 24,
+  ttlHours: 72,
   filters: [
     { name: "name", description: "Substring no nome da organização ou na marca (CustomerFriendlyName)" },
     { name: "api", description: "Substring na família de API (ex.: payments, automatic-payments)" },

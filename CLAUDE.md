@@ -88,7 +88,7 @@ Two layers: a **domain-agnostic core** and pluggable **domains**. The server exp
 - `src/core/types.ts` — the `Domain` contract, a discriminated union: `ExtractedDomain` (`extract()` fetch + structure remote data, sync `search`/`getItem` over cached data, `ttlHours`) or `LiveDomain` (`live.search`/`live.getItem` hit the source on every call; no cache/refresh; `search` requires a query). Every result of either `search` has a stable `id`.
 - `src/core/registry.ts` — the flat list of registered domains; the only wiring point.
 - `src/core/data.ts` — lazy extraction orchestrator: serves fresh cache, else calls `extract()` and caches; if extraction fails but a (stale) cache exists, serves it with `stale: true` instead of erroring.
-- `src/core/cache.ts` — JSON cache per domain in `~/.cache/opf-br-mcp/` (respects `XDG_CACHE_HOME`), 24h TTL per domain, atomic write via tmp file + rename.
+- `src/core/cache.ts` — JSON cache per domain in `~/.cache/opf-br-mcp/` (respects `XDG_CACHE_HOME`), 72h TTL per domain, atomic write via tmp file + rename.
 - `src/core/server.ts` — registers the MCP tools, validates domain ids and filter keys, compacts results (drops nulls/empty arrays), returns tool errors via `isError: true` text rather than throwing.
 - `src/core/http.ts` — `fetchWithRetry` with backoff delays from domain configs and a 30s per-request timeout.
 - `src/domains/<id>/` — each domain has `config.ts` (URLs, page ids, retry delays), `fetcher.ts` and/or `parser.ts`, and `index.ts` exporting the `Domain` object.

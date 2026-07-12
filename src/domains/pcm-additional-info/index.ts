@@ -77,11 +77,13 @@ export const pcmDomain: ExtractedDomain = {
   id: "pcm-additional-info",
   title: "PCM — Regras de obrigatoriedade do additionalInfo",
   description:
-    "Regras de preenchimento do campo additionalInfo das páginas PCM (Plataforma de Coleta de Métricas) do Confluence do Open Finance Brasil " +
-    "(Iniciação de Pagamentos, Pagamentos Automáticos, Sem Redirecionamento, DC-*). " +
-    "Cada item é um campo com regra, métodos, endpoints, versões, tamanho máximo e exemplo. " +
+    "Tabelas de obrigatoriedade e preenchimento do campo additionalInfo no Open Finance Brasil, extraídas do Confluence, por família: " +
+    "Iniciação de Pagamentos (v4/v5), Sem Redirecionamento, Pagamentos Automáticos, Segurança (SG) e Dados/Consentimento (DC-*, v3). " +
+    "Cada item é um campo com regra de preenchimento, roles (CLIENT/SERVER), métodos, endpoints, versões, tamanho máximo e exemplo. " +
+    "Uma das facetas da PCM (Plataforma de Coleta de Métricas): para o swagger dos endpoints de reporte veja pcm-openapi; " +
+    "para as regras de negócio (reporte, processamento, divergências) veja pcm-business-rules. " +
     "search devolve resumos; use get_item para o registro completo.",
-  ttlHours: 24,
+  ttlHours: 72,
   filters: [
     { name: "field", description: "Match exato no nome do campo (case-insensitive)" },
     { name: "contains", description: "Substring em campo ou definicao" },

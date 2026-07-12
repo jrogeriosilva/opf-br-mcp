@@ -13,11 +13,13 @@ export const pcmOpenapiDomain: ExtractedDomain = {
   id: "pcm-openapi",
   title: `PCM — spec OpenAPI ${pcmOpenapiConfig.specVersion}`,
   description:
-    "Spec OpenAPI oficial da PCM (Plataforma de Coleta de Métricas) do Open Finance Brasil. " +
+    "Spec OpenAPI oficial da PCM (Plataforma de Coleta de Métricas) do Open Finance Brasil — a faceta swagger. " +
     "Cobre os endpoints de reporte (report-api v1/v2), hybrid-flow, opendata, consents/stock, " +
-    "credit-portabilities, payments/status e token. Itens type=operation (um por método+path) e " +
-    "type=schema (payloads). search devolve resumos; use get_item para o nó completo da spec.",
-  ttlHours: 24,
+    "credit-portabilities, payments/status e token. Itens type=operation (um por método+path) e type=schema (payloads). " +
+    "Outras facetas da PCM: tabelas de obrigatoriedade do campo additionalInfo em pcm-additional-info; " +
+    "regras de negócio (reporte, processamento, divergências) em pcm-business-rules. " +
+    "search devolve resumos; use get_item para o nó completo da spec.",
+  ttlHours: 72,
   filters: [
     { name: "path", description: "Substring no path do endpoint (ex.: /report-api/v1/private/report)" },
     { name: "method", description: "Verbo HTTP exato (ex.: POST)" },

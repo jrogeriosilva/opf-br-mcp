@@ -26,6 +26,7 @@ export function definicaoSnippet(text: string, max = 120): string {
   if (text.length <= max) return text;
   const slice = text.slice(0, max);
   const lastSpace = slice.lastIndexOf(" ");
+  // Sem espaço nos primeiros `max` chars: fallback intencional para corte seco.
   const cut = lastSpace > 0 ? slice.slice(0, lastSpace) : slice;
   return `${cut.trimEnd()}…`;
 }

@@ -198,7 +198,8 @@ export function createServer(): McpServer {
       title: "Detalhar um item",
       description:
         "Devolve o registro completo de um item pelo `id` retornado por search " +
-        "(nos domínios *-openapi e participantes inclui o nó integral da spec em `detail`).",
+        "(nos domínios *-openapi e participantes inclui o nó integral da spec em `detail`; " +
+        "em pcm-additional-info devolve o registro completo, enquanto search devolve apenas um resumo).",
       inputSchema: {
         domain: domainIdSchema,
         id: z.string().describe("Id do item (vindo de search)"),

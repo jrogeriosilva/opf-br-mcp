@@ -82,6 +82,9 @@ describe("pcmDomain summary mode", () => {
     expect(r).toHaveProperty("campo", "tokenId");
     expect(r).toHaveProperty("id");
     expect(r).toHaveProperty("definicaoSnippet");
+    expect(r).toHaveProperty("versoes");
+    expect(r).toHaveProperty("roles");
+    expect(r).toHaveProperty("page");
     expect(r).not.toHaveProperty("regraDePreenchimento");
     expect(r).not.toHaveProperty("exemplo");
     expect(r).not.toHaveProperty("dominio");

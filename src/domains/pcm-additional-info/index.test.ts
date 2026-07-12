@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { DomainData } from "../../core/types.js";
-import { buildItems, pcmDomain } from "./index.js";
+import { buildItems, definicaoSnippet, pcmDomain } from "./index.js";
 import { parseAdditionalInfoTables } from "./parser.js";
 
 const html = readFileSync(new URL("../../../test/fixtures/pcm-page.html", import.meta.url), "utf8");
@@ -55,5 +55,21 @@ describe("pcmDomain", () => {
     const [first] = pcmDomain.search(data, undefined, { field: "proxy" });
     expect(pcmDomain.getItem(data, first.id)?.campo).toBe("proxy");
     expect(pcmDomain.getItem(data, "nao-existe")).toBeNull();
+  });
+});
+
+describe("definicaoSnippet", () => {
+  it("mantém texto curto sem reticências", () => {
+    expect(definicaoSnippet("Texto curto", 120)).toBe("Texto curto");
+  });
+
+  it("trunca em fronteira de palavra e adiciona reticências", () => {
+    const long = "palavra ".repeat(30).trim(); // 239 chars
+    const s = definicaoSnippet(long, 120);
+    expect(s.endsWith("…")).toBe(true);
+    expect(s.length).toBeLessThanOrEqual(121); // 120 + reticências
+    expect(s).not.toContain("  ");
+    // não corta no meio de uma palavra
+    expect(s.slice(0, -1).trimEnd().endsWith("palavra")).toBe(true);
   });
 });

@@ -21,6 +21,15 @@ interface PcmItem extends Item {
   page: { pageId: string; title: string; url: string };
 }
 
+/** Trunca a definição em fronteira de palavra, com reticências se cortada. */
+export function definicaoSnippet(text: string, max = 120): string {
+  if (text.length <= max) return text;
+  const slice = text.slice(0, max);
+  const lastSpace = slice.lastIndexOf(" ");
+  const cut = lastSpace > 0 ? slice.slice(0, lastSpace) : slice;
+  return `${cut.trimEnd()}…`;
+}
+
 function slugify(text: string): string {
   return text
     .normalize("NFD")

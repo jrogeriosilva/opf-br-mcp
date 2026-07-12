@@ -73,3 +73,33 @@ describe("definicaoSnippet", () => {
     expect(s.slice(0, -1).trimEnd().endsWith("palavra")).toBe(true);
   });
 });
+
+describe("pcmDomain summary mode", () => {
+  it("search omite campos pesados e inclui definicaoSnippet", () => {
+    const results = pcmDomain.search(fixtureData(), undefined, { field: "tokenId" });
+    expect(results).toHaveLength(1);
+    const r = results[0];
+    expect(r).toHaveProperty("campo", "tokenId");
+    expect(r).toHaveProperty("id");
+    expect(r).toHaveProperty("definicaoSnippet");
+    expect(r).not.toHaveProperty("regraDePreenchimento");
+    expect(r).not.toHaveProperty("exemplo");
+    expect(r).not.toHaveProperty("dominio");
+    expect(r).not.toHaveProperty("endpoints");
+  });
+
+  it("getItem devolve o registro completo", () => {
+    const data = fixtureData();
+    const [s] = pcmDomain.search(data, undefined, { field: "tokenId" });
+    const full = pcmDomain.getItem(data, s.id)!;
+    expect(full).toHaveProperty("regraDePreenchimento");
+    expect(full).toHaveProperty("endpoints");
+    expect(full).toHaveProperty("exemplo");
+  });
+
+  it("filtra por endpoint mesmo com endpoints fora do resumo", () => {
+    const results = pcmDomain.search(fixtureData(), undefined, { endpoint: "/consents" });
+    expect(results.length).toBeGreaterThan(0);
+    expect(results[0]).not.toHaveProperty("endpoints");
+  });
+});

@@ -30,6 +30,20 @@ export function definicaoSnippet(text: string, max = 120): string {
   return `${cut.trimEnd()}…`;
 }
 
+/** Projeta o registro completo num resumo enxuto para o search. */
+function summarizePcm(item: PcmItem): Item {
+  const summary: Record<string, unknown> = {
+    campo: item.campo,
+    tipo: item.tipo ?? null,
+    versoes: item.versoes,
+    roles: item.roles,
+    id: item.id,
+    page: item.page,
+  };
+  if (item.definicao) summary.definicaoSnippet = definicaoSnippet(item.definicao);
+  return summary as Item;
+}
+
 function slugify(text: string): string {
   return text
     .normalize("NFD")
@@ -64,7 +78,8 @@ export const pcmDomain: ExtractedDomain = {
   description:
     "Regras de preenchimento do campo additionalInfo das páginas PCM (Plataforma de Coleta de Métricas) do Confluence do Open Finance Brasil " +
     "(Iniciação de Pagamentos, Pagamentos Automáticos, Sem Redirecionamento, DC-*). " +
-    "Cada item é um campo com regra, métodos, endpoints, versões, tamanho máximo e exemplo.",
+    "Cada item é um campo com regra, métodos, endpoints, versões, tamanho máximo e exemplo. " +
+    "search devolve resumos; use get_item para o registro completo.",
   ttlHours: 24,
   filters: [
     { name: "field", description: "Match exato no nome do campo (case-insensitive)" },
@@ -98,19 +113,21 @@ export const pcmDomain: ExtractedDomain = {
     const method = filters.method?.toUpperCase();
     const page = filters.page ? normalize(filters.page) : undefined;
 
-    return (data.items as PcmItem[]).filter((item) => {
-      const campo = String(item.campo ?? "");
-      if (page && !normalize(item.page.title).includes(page)) return false;
-      if (field && campo.trim().toLowerCase() !== field) return false;
-      if (contains && !normalize(`${campo} ${item.definicao ?? ""}`).includes(contains)) return false;
-      if (endpoint && !item.endpoints.some((e) => e.toLowerCase().includes(endpoint))) return false;
-      if (method && !item.metodos.some((m) => m.toUpperCase() === method)) return false;
-      if (query?.trim()) {
-        const haystack = `${campo} ${item.definicao ?? ""} ${item.regraDePreenchimento ?? ""}`;
-        if (!matchesQuery(haystack, query)) return false;
-      }
-      return true;
-    });
+    return (data.items as PcmItem[])
+      .filter((item) => {
+        const campo = String(item.campo ?? "");
+        if (page && !normalize(item.page.title).includes(page)) return false;
+        if (field && campo.trim().toLowerCase() !== field) return false;
+        if (contains && !normalize(`${campo} ${item.definicao ?? ""}`).includes(contains)) return false;
+        if (endpoint && !item.endpoints.some((e) => e.toLowerCase().includes(endpoint))) return false;
+        if (method && !item.metodos.some((m) => m.toUpperCase() === method)) return false;
+        if (query?.trim()) {
+          const haystack = `${campo} ${item.definicao ?? ""} ${item.regraDePreenchimento ?? ""}`;
+          if (!matchesQuery(haystack, query)) return false;
+        }
+        return true;
+      })
+      .map(summarizePcm);
   },
   getItem(data, id) {
     return data.items.find((i) => i.id === id) ?? null;

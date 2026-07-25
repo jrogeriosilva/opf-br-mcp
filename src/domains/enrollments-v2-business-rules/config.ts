@@ -6,7 +6,8 @@ export const enrollmentsV2BusinessRulesConfig = {
     "do Open Finance Brasil, extraídas das páginas Confluence de Serviços (SV): Informações Gerais, " +
     "Máquina de estados (vinculação de conta, autorização de consentimento e do consentimento recorrente), " +
     "Edição do vínculo de dispositivo (campos editáveis e condições) e FAQ - JSR (perguntas e respostas por categoria). " +
-    "Complementa enrollments-v2-openapi, que traz a spec (endpoints e schemas) da mesma versão. " +
+    "Complementa enrollments-v2-openapi, que traz a spec (endpoints e schemas) do mesmo major — " +
+    "hoje na 2.3.0, enquanto estas páginas do Confluence ainda são as da 2.2.0. " +
     "Cada item é uma seção (heading) da página. " +
     "search devolve um snippet do conteúdo; use get_item para o texto completo da seção.",
   confluenceBaseUrl: "https://openfinancebrasil.atlassian.net",

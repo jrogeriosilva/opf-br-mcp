@@ -93,7 +93,7 @@ Two layers: a **domain-agnostic core** and pluggable **domains**. The server exp
 - `src/core/http.ts` — `fetchWithRetry` with backoff delays from domain configs and a 30s per-request timeout.
 - `src/domains/<id>/` — each domain has `config.ts` (URLs, page ids, retry delays), `fetcher.ts` and/or `parser.ts`, and `index.ts` exporting the `Domain` object.
 
-`src/core/version.ts` hardcodes `PACKAGE_VERSION` — keep it in sync with `package.json` when bumping.
+`src/core/version.ts` hardcodes `PACKAGE_VERSION`; bumping a version means touching `package.json`, `version.ts` and `package-lock.json` (via `npm version`). `src/core/version.test.ts` keeps the three in sync — if it fails, one of them was left behind.
 
 ## Adding a new domain
 

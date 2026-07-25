@@ -1,6 +1,6 @@
 {
   "name": "opf-br-mcp",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "MCP server local com as regras do Open Finance Brasil (PCM additionalInfo, specs OpenAPI de Pagamentos)",
   "type": "module",
   "license": "MIT",
@@ -35,7 +35,8 @@
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepack": "npm run build && npm test"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",

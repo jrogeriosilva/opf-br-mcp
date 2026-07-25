@@ -1,0 +1,11 @@
+<h1>Conceito geral do fluxo de tentativas Intradia e Extradia para o produto Pix automático</h1>
+<p>Fluxo Intradia: a transação ocorre no mesmo dia em que foi programada.</p>
+<h2>Primeira Tentativa</h2>
+<p>A liquidação da transação é realizada entre 0h e 8h do dia programado.</p>
+<h2>Segunda Tentativa (Retentativa Intradia)</h2>
+<p>Ocorre apenas em casos de falha na primeira janela, com novo e2eID quando necessário.</p>
+<h1>Edição do consentimento</h1>
+<table>
+  <tr><th>Campo</th><th>Editável</th></tr>
+  <tr><td>recurringConfiguration.automatic.maximumVariableAmount</td><td>Sim</td></tr>
+</table>

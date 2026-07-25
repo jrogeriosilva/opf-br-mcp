@@ -1,0 +1,9 @@
+<style>[data-colorid=abc123]{color:#0747a6}</style>
+<p>Segundo a W3C, um método HTTP idempotente pode ser chamado muitas vezes sem resultados diferentes.</p>
+<h1><strong>Como mitigarmos esse risco?</strong></h1>
+<p>Uso do header x-idempotency-key nas requisições POST e PATCH.</p>
+<h2>Cenários de uso de idempotência</h2>
+<table>
+  <tr><th>Cenário</th><th>Comportamento esperado</th></tr>
+  <tr><td>Mesma chave, mesmo payload</td><td>Devolve a resposta original</td></tr>
+</table>

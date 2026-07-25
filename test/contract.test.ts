@@ -29,6 +29,26 @@ const jornadaOtimizadaHtml = readFileSync(
   new URL("./fixtures/jornada-otimizada-page.html", import.meta.url),
   "utf8"
 );
+const paymentsV5BusinessRulesHtml = readFileSync(
+  new URL("./fixtures/payments-v5-business-rules-page.html", import.meta.url),
+  "utf8"
+);
+const automaticPaymentsV2BusinessRulesHtml = readFileSync(
+  new URL("./fixtures/automatic-payments-v2-business-rules-page.html", import.meta.url),
+  "utf8"
+);
+const enrollmentsV2BusinessRulesHtml = readFileSync(
+  new URL("./fixtures/enrollments-v2-business-rules-page.html", import.meta.url),
+  "utf8"
+);
+const paymentsCommonRulesHtml = readFileSync(
+  new URL("./fixtures/payments-common-rules-page.html", import.meta.url),
+  "utf8"
+);
+const paymentsImplementationGuidesHtml = readFileSync(
+  new URL("./fixtures/payments-implementation-guides-page.html", import.meta.url),
+  "utf8"
+);
 const mqdHtml = readFileSync(new URL("./fixtures/mqd-page.html", import.meta.url), "utf8");
 const segurancaHtml = readFileSync(new URL("./fixtures/seguranca-page.html", import.meta.url), "utf8");
 const webhookYaml = readFileSync(new URL("./fixtures/webhook-v1-spec.yml", import.meta.url), "utf8");
@@ -57,6 +77,41 @@ const fixtureData: Record<string, () => DomainData> = {
   "jornada-otimizada": () => ({
     items: buildPcmRulesItems([
       { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(jornadaOtimizadaHtml) },
+    ]),
+  }),
+  "payments-v5-business-rules": () => ({
+    items: buildPcmRulesItems([
+      { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(paymentsV5BusinessRulesHtml) },
+    ]),
+  }),
+  "automatic-payments-v2-business-rules": () => ({
+    items: buildPcmRulesItems([
+      {
+        pageId: "1",
+        title: "Página Fixture",
+        url: "u",
+        sections: parseSections(automaticPaymentsV2BusinessRulesHtml),
+      },
+    ]),
+  }),
+  "enrollments-v2-business-rules": () => ({
+    items: buildPcmRulesItems([
+      { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(enrollmentsV2BusinessRulesHtml) },
+    ]),
+  }),
+  "payments-common-rules": () => ({
+    items: buildPcmRulesItems([
+      { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(paymentsCommonRulesHtml) },
+    ]),
+  }),
+  "payments-implementation-guides": () => ({
+    items: buildPcmRulesItems([
+      {
+        pageId: "1",
+        title: "Página Fixture",
+        url: "u",
+        sections: parseSections(paymentsImplementationGuidesHtml),
+      },
     ]),
   }),
   "mqd": () => ({

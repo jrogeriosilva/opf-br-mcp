@@ -47,6 +47,7 @@ function blockText($: cheerio.CheerioAPI, node: AnyNode): string {
  */
 export function parseSections(html: string): ConfluenceSection[] {
   const $ = cheerio.load(html);
+  $("style, script").remove();
   const sections: ConfluenceSection[] = [];
 
   const headings = $(HEADING_SELECTOR).toArray();

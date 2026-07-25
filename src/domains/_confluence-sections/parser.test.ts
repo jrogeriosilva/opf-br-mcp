@@ -38,4 +38,13 @@ describe("parseSections", () => {
     const paired = parseSections(html).find((s) => s.heading === "PAIRED")!;
     expect(paired.content).toBe("Reporte conciliado com sucesso.");
   });
+
+  it("descarta CSS e scripts embutidos na página", () => {
+    const withStyle =
+      "<style>[data-colorid=abc]{color:#0747a6}</style><p>Texto útil.</p>" +
+      "<h2>Seção</h2><script>window.x=1</script><p>Conteúdo da seção.</p>";
+    const sections = parseSections(withStyle);
+    expect(sections[0].content).toBe("Texto útil.");
+    expect(sections[1].content).toBe("Conteúdo da seção.");
+  });
 });

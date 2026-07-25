@@ -5,7 +5,7 @@ Tradeoff: These guidelines bias toward caution over speed. For trivial tasks, us
 
 # 0. What this is
 
-Local stdio MCP server (`opf-br-mcp`) that gives coding agents token-efficient access to Open Finance Brasil regulatory knowledge (PCM `additionalInfo` rules from Confluence, Payments OpenAPI spec from GitHub). ESM, Node >= 20, TypeScript strict. User-facing strings, docs, and commit messages are in English.
+Local stdio MCP server (`opf-br-mcp`) that gives coding agents token-efficient access to Open Finance Brasil regulatory knowledge (PCM `additionalInfo` rules from Confluence, Payments OpenAPI spec from GitHub). ESM, Node >= 20, TypeScript strict. User-facing strings (tool/domain descriptions, server instructions), docs (README) and commit messages are in Brazilian Portuguese; this file is the exception and stays in English.
 
 ## 1. Think Before Coding
 
@@ -110,4 +110,4 @@ Two layers: a **domain-agnostic core** and pluggable **domains**. The server exp
 - Domains wrapping a versioned spec must encode the spec's major version in the domain id, e.g. `payments-v4-openapi` for Payments API v4 (`specVersion` in `config.ts`). When the source publishes a new major, add a new domain (`payments-v5-openapi`) alongside the old one rather than mutating the existing id — this keeps old ids stable for clients pinned to a version.
 - An API is covered by two paired domains: `<api>-v<major>-openapi` (the spec) and `<api>-v<major>-business-rules` (the Confluence pages of that same version — state machine, sequence diagram, scope, migration notes). Both descriptions cross-reference each other. Version-independent Confluence content stays out of these: shared conventions go to `payments-common-rules`, journey guides to `payments-implementation-guides`.
 - Confluence page lists in `config.ts` exclude index pages (link-only), `Informações Técnicas` (just a swagger download link), archived `Histórico de Especificações` subtrees, and `Changelog` pages (100k+ chars of diff tables that would swamp the cache and search).
-- Commits follow conventional-commit prefixes (`feat:`, `fix:`, `test:`, `docs:`) with messages in English.
+- Commits follow conventional-commit prefixes (`feat:`, `fix:`, `test:`, `docs:`) with messages in Brazilian Portuguese.

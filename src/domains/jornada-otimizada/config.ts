@@ -4,7 +4,9 @@ export const jornadaOtimizadaConfig = {
   description:
     "Conhecimento regulatório da Jornada Otimizada do Open Finance Brasil, extraído das páginas " +
     "Confluence: Jornada Otimizada (introdução), Orientações Gerais, Transferências Inteligentes e " +
-    "Jornada sem Redirecionamento. Cada item é uma seção (heading) da página. search devolve um " +
+    "Jornada sem Redirecionamento. Recorte da Jornada Otimizada; o guia de implementação homônimo de " +
+    "Transferências Inteligentes, sob Serviços (SV), está em payments-implementation-guides. " +
+    "Cada item é uma seção (heading) da página. search devolve um " +
     "snippet do conteúdo; use get_item para o texto completo da seção.",
   confluenceBaseUrl: "https://openfinancebrasil.atlassian.net",
   interRequestDelayMs: 2000,

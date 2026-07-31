@@ -7,8 +7,10 @@ export const automaticPaymentsV2Config: OpenApiDomainConfig = {
     "Spec OpenAPI oficial da API de Automatic Payments do Open Finance Brasil, versão 2. " +
     "Cobre a iniciação de pagamentos automáticos (Pix Automático e Transferências Inteligentes) mediante consentimento recorrente. " +
     "Endpoints /recurring-consents (criação, consulta e edição/revogação) e /pix/recurring-payments (criação, retry, consulta e cancelamento); scope recurring-payments. " +
-    "Itens type=operation (endpoints, um por método+path) e type=schema (payloads). " +
-    "search devolve resumos; use get_item para o nó completo da spec.",
+    "Itens type=operation (endpoints, um por método+path), type=schema (payloads) e os components " +
+    "reutilizáveis alvos dos $ref: type=response, type=parameter e type=header. " +
+    "search devolve resumos; use get_item para o nó completo da spec — nas operações o campo " +
+    "`refs` traz os ids dos components referenciados, prontos para get_item.",
   pathExample: "/pix/recurring-payments",
   specName: "automatic-payments",
   specVersion: "2.2.0",

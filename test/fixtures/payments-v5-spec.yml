@@ -13,6 +13,9 @@ paths:
           application/jwt:
             schema:
               $ref: '#/components/schemas/CreatePaymentConsent'
+      responses:
+        '201':
+          $ref: '#/components/responses/201PaymentsConsentsConsentCreated'
   /consents/{consentId}:
     get:
       tags: [Consents]
@@ -49,3 +52,19 @@ components:
       properties:
         data:
           type: object
+    X-V:
+      type: string
+      description: Versão da API implementada pela instituição
+      pattern: '^\d+\.\d+\.\d+$'
+  headers:
+    X-V:
+      description: Cabeçalho que indica a versão implementada da API pela instituição financeira.
+      required: true
+      schema:
+        $ref: '#/components/schemas/X-V'
+  responses:
+    201PaymentsConsentsConsentCreated:
+      description: Consentimento de pagamento criado com sucesso.
+      headers:
+        x-v:
+          $ref: '#/components/headers/X-V'

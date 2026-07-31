@@ -8,8 +8,10 @@ export const consentsV3Config: OpenApiDomainConfig = {
     "É o consentimento de dados — não cobre consentimento de pagamento, que fica em payments-v4/v5-openapi (/consents) e automatic-payments-v2-openapi (/recurring-consents). " +
     "Cobre criação (POST /consents), consulta (GET /consents/{consentId}), revogação (DELETE /consents/{consentId}), " +
     "renovação (POST /consents/{consentId}/extends) e histórico de renovações (GET /consents/{consentId}/extensions). " +
-    "Itens type=operation (um por método+path) e type=schema (payloads, ex.: CreateConsent, ResponseConsent, LoggedUser, BusinessEntity). " +
-    "search devolve resumos; use get_item para o nó completo da spec.",
+    "Itens type=operation (um por método+path), type=schema (payloads, ex.: CreateConsent, ResponseConsent, LoggedUser, BusinessEntity) " +
+    "e os components reutilizáveis alvos dos $ref: type=response (BadRequest, UnprocessableEntity, ...) e type=parameter (Authorization, xFapiInteractionId, ...). " +
+    "search devolve resumos; use get_item para o nó completo da spec — nas operações o campo " +
+    "`refs` traz os ids dos components referenciados, prontos para get_item.",
   pathExample: "/consents/{consentId}",
   specName: "consents",
   specVersion: "3.3.1",

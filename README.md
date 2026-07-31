@@ -52,20 +52,28 @@ bem na janela de contexto de um agente, e despejá-la desperdiça tokens. A solu
 apenas o mínimo necessário em cada etapa do funil:
 
 1. **`list_domains`** — catálogo barato: quais domínios e filtros existem.
-2. **`search`** — índice **pesquisável e resumido**. Cada resultado traz só
-   `id`, `path`, `method`, `summary`/`name` e `required`; o nó pesado da spec
-   (`detail`) é removido do resumo, e o retorno ainda é compactado (omite `null`
-   e arrays vazios).
+2. **`search`** — índice **pesquisável e resumido**. Cada resultado traz só os
+   campos leves (`id`, `type`, `path`, `method`, `summary`/`name`, `required`,
+   `in`); o nó pesado da spec (`detail`) e a lista `refs` são removidos do
+   resumo, e o retorno ainda é compactado (omite `null` e arrays vazios).
 3. **`get_item`** — só aqui o nó integral da spec é entregue, e apenas para o
    `id` que o agente escolheu.
 
 Como o Swagger/OpenAPI vira dados pesquisáveis: o parser "achata" a spec em itens
 com `id` estável — um por endpoint (`type: operation`, ex.
-`payments-v4:POST /pix/payments`) e um por schema (`type: schema`, ex.
-`payments-v4:schema:PixPayment`). O JSON completo de cada nó fica retido em
-`detail` até um `get_item` explícito. Os `id`s não são adivinháveis: sempre vêm
-de um `search`. Assim o agente localiza o endpoint/schema certo pagando poucos
-tokens e só "paga" o payload integral quando pede um item nomeado.
+`payments-v4:POST /pix/payments`) e um por component reutilizável: `type: schema`
+(`payments-v4:schema:PixPayment`), `type: response` (`webhook:response:202Webhook`),
+`type: parameter` (`webhook:parameter:xWebhookInteractionId`) e `type: header`
+(`payments:header:X-V`). O JSON completo de
+cada nó fica retido em `detail` até um `get_item` explícito. Os `id`s não são
+adivinháveis: sempre vêm de um `search`. Assim o agente localiza o endpoint/schema
+certo pagando poucos tokens e só "paga" o payload integral quando pede um item nomeado.
+
+Os `$ref` não são expandidos em linha (medimos 3–7x mais tokens por operação):
+em vez disso, o `get_item` de um item traz `refs` com os `id`s dos components que
+ele referencia — todos resolvíveis por `get_item`. Resolver
+`responses.202.$ref: '#/components/responses/202Webhook'` é uma chamada a mais,
+não uma ida ao YAML da fonte.
 
 Dados: extraídos das fontes públicas na primeira consulta (lazy), cache em
 `~/.cache/opf-br-mcp/` com TTL de 72h. Sem rede, serve cache expirado com aviso.

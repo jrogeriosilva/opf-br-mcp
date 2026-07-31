@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { DomainData } from "../../core/types.js";
+import { parseOpenApiSpec } from "../_openapi/parser.js";
 import { pcmOpenapiDomain } from "./index.js";
-import { parseOpenApiSpec } from "./parser.js";
 
 const yamlText = readFileSync(
   new URL("../../../test/fixtures/pcm-openapi-spec.yml", import.meta.url),

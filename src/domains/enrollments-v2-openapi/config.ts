@@ -7,8 +7,10 @@ export const enrollmentsV2Config: OpenApiDomainConfig = {
     "Spec OpenAPI oficial da API de Enrollments (Vínculo de Dispositivo) do Open Finance Brasil, versão 2. " +
     "Cobre o pagamento sem redirecionamento: vínculo de dispositivos (FIDO), autorização de consentimentos e Pix Automático. " +
     "Endpoints /enrollments, /consents/{consentId}/authorise e /recurring-consents/{recurringConsentId}/authorise. " +
-    "Itens type=operation (endpoints, um por método+path) e type=schema (payloads). " +
-    "search devolve resumos; use get_item para o nó completo da spec.",
+    "Itens type=operation (endpoints, um por método+path), type=schema (payloads) e os components " +
+    "reutilizáveis alvos dos $ref: type=response, type=parameter e type=header. " +
+    "search devolve resumos; use get_item para o nó completo da spec — nas operações o campo " +
+    "`refs` traz os ids dos components referenciados, prontos para get_item.",
   pathExample: "/enrollments",
   specName: "enrollments",
   specVersion: "2.3.0",

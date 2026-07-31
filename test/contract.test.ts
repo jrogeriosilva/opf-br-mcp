@@ -6,7 +6,6 @@ import { buildItems } from "../src/domains/pcm-additional-info/index.js";
 import { parseAdditionalInfoTables } from "../src/domains/pcm-additional-info/parser.js";
 import { parseOpenApiSpec } from "../src/domains/_openapi/parser.js";
 import { parseOpenApiSpec as parseConsentsV3 } from "../src/domains/_openapi/parser.js";
-import { parseOpenApiSpec as parsePcmOpenapi } from "../src/domains/pcm-openapi/parser.js";
 import { buildItems as buildPcmRulesItems } from "../src/domains/_confluence-sections/domain.js";
 import { parseSections } from "../src/domains/_confluence-sections/parser.js";
 import { parseParticipants } from "../src/domains/participantes/parser.js";
@@ -68,7 +67,7 @@ const fixtureData: Record<string, () => DomainData> = {
     items: parseOpenApiSpec(automaticPaymentsV2Yaml, "automatic-payments"),
   }),
   "consents-v3-openapi": () => ({ items: parseConsentsV3(consentsV3Yaml, "consents") }),
-  "pcm-openapi": () => ({ items: parsePcmOpenapi(pcmOpenapiYaml, "pcm") }),
+  "pcm-openapi": () => ({ items: parseOpenApiSpec(pcmOpenapiYaml, "pcm") }),
   "pcm-business-rules": () => ({
     items: buildPcmRulesItems([
       { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(pcmBusinessRulesHtml) },

@@ -111,6 +111,34 @@ describe("opf-br-mcp server", () => {
     expect(parsed.domains[0].filters.map((f: { name: string }) => f.name)).toContain("field");
   });
 
+  // O list_domains deduplica os filtros comuns a uma família num `filterSets` no
+  // topo. Se a referência quebrar (nome inexistente) ou a união divergir do que
+  // `search` valida, o agente recebe um contrato falso: filtros anunciados que
+  // são rejeitados, ou filtros aceitos que ele nunca descobre. Como `search`
+  // valida contra `d.filters`, o invariante é comparar com essa mesma fonte.
+  it("list_domains anuncia, por domínio, exatamente os filtros que search aceita", async () => {
+    const client = await connectedClient();
+    const parsed = JSON.parse(firstText(await client.callTool({ name: "list_domains", arguments: {} })));
+    for (const d of domains) {
+      const emitted = parsed.domains.find((x: { id: string }) => x.id === d.id);
+      if (emitted.filterSet) {
+        expect(parsed.filterSets[emitted.filterSet], `${d.id} referencia filterSet inexistente`).toBeDefined();
+      }
+      const anunciados = [
+        ...(emitted.filters ?? []),
+        ...(emitted.filterSet ? parsed.filterSets[emitted.filterSet] : []),
+      ];
+      expect(anunciados, `${d.id}`).toEqual(expect.arrayContaining(d.filters));
+      expect(anunciados.length, `${d.id}`).toBe(d.filters.length);
+      // A subtração compara name+description: um filtro próprio homônimo a um
+      // herdado (mesmo nome, descrição diferente) sobreviveria à subtração e o
+      // agente veria duas definições do mesmo filtro. As contas acima batem
+      // nesse caso — só a unicidade dos nomes pega.
+      const nomes = anunciados.map((f: { name: string }) => f.name);
+      expect(new Set(nomes).size, `${d.id} anuncia nome de filtro duplicado`).toBe(nomes.length);
+    }
+  });
+
   it("list_domains identifica a versão do server e a spec de cada domínio", async () => {
     const client = await connectedClient();
     const parsed = JSON.parse(firstText(await client.callTool({ name: "list_domains", arguments: {} })));

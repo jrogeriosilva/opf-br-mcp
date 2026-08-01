@@ -25,6 +25,12 @@ interface DomainBase {
   description: string;
   /** Filtros aceitos por search (pode ser vazio em domínios live). */
   filters: FilterSpec[];
+  /**
+   * Nome do conjunto em FILTER_SETS de onde vem a parte comum de `filters`.
+   * Só afeta a serialização do list_domains, que emite o conjunto uma vez e
+   * lista por domínio apenas os filtros próprios.
+   */
+  filterSet?: string;
   /** Versão da spec de origem, quando o domínio embrulha uma (ex.: "5.0.0"). */
   specVersion?: string;
 }

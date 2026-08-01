@@ -67,7 +67,12 @@ bem na janela de contexto de um agente, e despejá-la desperdiça tokens. A solu
 é **revelação progressiva** — o agente nunca recebe a spec completa de uma vez,
 apenas o mínimo necessário em cada etapa do funil:
 
-1. **`list_domains`** — catálogo barato: quais domínios e filtros existem.
+1. **`list_domains`** — catálogo barato: quais domínios e filtros existem. Os
+   filtros idênticos a uma família inteira de domínios (os 8 `*-openapi`, os 11
+   de seções do Confluence) saem uma única vez em `filterSets`; cada domínio
+   traz `filterSet` e só lista inline o que é próprio dele (em `*-openapi`,
+   apenas `path`, cujo exemplo varia por API). Os filtros aceitos por um domínio
+   são a união dos dois.
 2. **`search`** — índice **pesquisável e resumido**. Cada resultado traz só os
    campos leves (`id`, `type`, `path`, `method`, `summary`/`name`, `required`,
    `in`); o nó pesado da spec (`detail`) e a lista `refs` são removidos do

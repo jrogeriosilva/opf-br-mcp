@@ -4,6 +4,7 @@ import type { ServerNotification, ServerRequest } from "@modelcontextprotocol/sd
 import { z } from "zod";
 import { readCache } from "./cache.js";
 import { getDomainData } from "./data.js";
+import { FILTER_SETS } from "./filter-sets.js";
 import { domains } from "./registry.js";
 import type { Domain, ExtractContext, ExtractedDomain, Item } from "./types.js";
 import { PACKAGE_VERSION } from "./version.js";
@@ -77,6 +78,8 @@ export function createServer(): McpServer {
         "Lista os domínios de conhecimento do Open Finance Brasil disponíveis neste server, " +
         "com os filtros aceitos por cada um, a versão da spec de origem e o estado do cache local. " +
         "Devolve também a versão deste server em `server.version`. " +
+        "Os filtros aceitos por um domínio são a união de `filters` (os próprios dele, pode vir ausente) " +
+        "com `filterSets[<filterSet>]` (o conjunto comum à família, listado uma vez no topo). " +
         "Comece por aqui; depois use search(domain, ...) e get_item(domain, id).",
       annotations: {
         readOnlyHint: true,
@@ -87,11 +90,18 @@ export function createServer(): McpServer {
     },
     async () => {
       const out = domains.map((d) => {
+        // Os filtros que vêm do conjunto compartilhado saem do payload por domínio;
+        // o cliente reconstrói a lista aceita unindo `filters` a filterSets[filterSet].
+        const shared = d.filterSet ? FILTER_SETS[d.filterSet] : undefined;
+        const own = shared
+          ? d.filters.filter((f) => !shared.some((s) => s.name === f.name && s.description === f.description))
+          : d.filters;
         const base = {
           id: d.id,
           title: d.title,
           description: d.description,
-          filters: d.filters,
+          ...(d.filterSet ? { filterSet: d.filterSet } : {}),
+          ...(own.length > 0 ? { filters: own } : {}),
           ...(d.specVersion ? { specVersion: d.specVersion } : {}),
         };
         if (d.live) {
@@ -104,7 +114,14 @@ export function createServer(): McpServer {
           extractedAt: cached?.extractedAt ?? null,
         };
       });
-      return text({ server: { name: "opf-br-mcp", version: PACKAGE_VERSION }, domains: out });
+      const usedSets = Object.fromEntries(
+        Object.entries(FILTER_SETS).filter(([name]) => domains.some((d) => d.filterSet === name))
+      );
+      return text({
+        server: { name: "opf-br-mcp", version: PACKAGE_VERSION },
+        filterSets: usedSets,
+        domains: out,
+      });
     }
   );
 

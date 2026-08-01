@@ -1,5 +1,6 @@
 import { sleep } from "../../core/http.js";
 import { fetchConfluencePage } from "../../core/confluence.js";
+import { FILTER_SETS } from "../../core/filter-sets.js";
 import type { DomainData, ExtractedDomain, Item } from "../../core/types.js";
 import { matchesQuery, normalize } from "../../core/text.js";
 import { parseSections, type ConfluenceSection } from "./parser.js";
@@ -79,11 +80,8 @@ export function createConfluenceSectionsDomain(config: ConfluenceSectionsConfig)
     description: config.description,
     specVersion: config.specVersion,
     ttlHours: 72,
-    filters: [
-      { name: "page", description: "Substring no título da página Confluence" },
-      { name: "heading", description: "Substring no título da seção (heading)" },
-      { name: "contains", description: "Substring no conteúdo da seção" },
-    ],
+    filterSet: "sections",
+    filters: [...FILTER_SETS.sections],
     async extract(ctx): Promise<DomainData> {
       const total = config.pages.length;
       const pages: ConfluencePageSections[] = [];

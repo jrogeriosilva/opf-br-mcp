@@ -1,4 +1,5 @@
 import { fetchWithRetry } from "../../core/http.js";
+import { FILTER_SETS } from "../../core/filter-sets.js";
 import type { DomainData, ExtractedDomain, Item } from "../../core/types.js";
 import { matchesQuery, normalize } from "../../core/text.js";
 import { parseOpenApiSpec } from "./parser.js";
@@ -27,24 +28,10 @@ export function createOpenApiDomain(config: OpenApiDomainConfig): ExtractedDomai
     description: config.description,
     specVersion: config.specVersion,
     ttlHours: 72,
+    filterSet: "openapi",
     filters: [
       { name: "path", description: `Substring no path do endpoint (ex.: ${config.pathExample})` },
-      { name: "method", description: "Verbo HTTP exato (ex.: POST)" },
-      { name: "schema", description: "Substring no nome do schema (case-insensitive)" },
-      {
-        name: "response",
-        description:
-          "Substring no nome do components.responses, a chave usada no $ref (ex.: 202Webhook)",
-      },
-      {
-        name: "parameter",
-        description:
-          "Substring no nome do components.parameters, a chave usada no $ref (ex.: xFapiInteractionId)",
-      },
-      {
-        name: "header",
-        description: "Substring no nome do components.headers, a chave usada no $ref (ex.: X-V)",
-      },
+      ...FILTER_SETS.openapi,
     ],
     async extract(ctx): Promise<DomainData> {
       if (ctx?.signal?.aborted) throw new Error("Extração cancelada pelo cliente");

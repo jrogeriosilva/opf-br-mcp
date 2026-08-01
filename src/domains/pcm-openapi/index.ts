@@ -3,7 +3,7 @@ import { pcmOpenapiConfig } from "./config.js";
 
 export const pcmOpenapiDomain = createOpenApiDomain({
   id: "pcm-openapi",
-  title: `PCM — spec OpenAPI ${pcmOpenapiConfig.specVersion}`,
+  title: `PCM — spec OpenAPI (${pcmOpenapiConfig.specVersion})`,
   description:
     "Spec OpenAPI oficial da PCM (Plataforma de Coleta de Métricas) do Open Finance Brasil — a faceta swagger. " +
     "Cobre os endpoints de reporte (report-api v1/v2), hybrid-flow, opendata, consents/stock, " +

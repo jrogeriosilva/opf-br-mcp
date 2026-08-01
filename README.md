@@ -32,12 +32,24 @@ acesso token-eficiente às regras do Open Finance Brasil.
 
 ## Tools
 
-- `list_domains()` — descoberta: domínios, filtros e estado do cache
+- `list_domains()` — descoberta: domínios, filtros, versão da spec de origem e estado do cache
 - `search(domain, query?, filters?, limit?, offset?)` — busca filtrada, retorno compacto
 - `get_item(domain, id)` — registro completo
 - `refresh(domain?)` — força re-extração das fontes
 
 Fluxo recomendado para o agente: `list_domains` → `search` → `get_item`.
+
+### Qual versão estou usando?
+
+`list_domains` devolve `server: { name, version }` junto do catálogo, então o
+agente descobre a versão do server na mesma chamada com que descobre os domínios.
+Cada domínio que embrulha uma spec traz também o seu `specVersion`.
+
+Pela linha de comando:
+
+```bash
+npx opf-br-mcp --version
+```
 
 Domínios marcados como `live` (ex.: `portal`) consultam a fonte a cada chamada:
 não têm cache nem `refresh`, e `search` exige `query`. Quando um `search` em

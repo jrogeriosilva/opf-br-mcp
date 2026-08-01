@@ -10,6 +10,12 @@ export interface ConfluenceSectionsConfig {
   id: string;
   title: string;
   description: string;
+  /**
+   * Versão das páginas de regras, quando são versionadas. Costuma ficar atrás da
+   * spec pareada (o Confluence demora a acompanhar patches), mas o major precisa
+   * bater — é o que o id do domínio codifica. Omitir em conteúdo atemporal.
+   */
+  specVersion?: string;
   confluenceBaseUrl: string;
   interRequestDelayMs: number;
   retryDelaysMs: number[];
@@ -71,6 +77,7 @@ export function createConfluenceSectionsDomain(config: ConfluenceSectionsConfig)
     id: config.id,
     title: config.title,
     description: config.description,
+    specVersion: config.specVersion,
     ttlHours: 72,
     filters: [
       { name: "page", description: "Substring no título da página Confluence" },

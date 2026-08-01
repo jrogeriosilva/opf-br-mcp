@@ -75,7 +75,8 @@ export function createServer(): McpServer {
       title: "Listar domínios",
       description:
         "Lista os domínios de conhecimento do Open Finance Brasil disponíveis neste server, " +
-        "com os filtros aceitos por cada um e o estado do cache local. " +
+        "com os filtros aceitos por cada um, a versão da spec de origem e o estado do cache local. " +
+        "Devolve também a versão deste server em `server.version`. " +
         "Comece por aqui; depois use search(domain, ...) e get_item(domain, id).",
       annotations: {
         readOnlyHint: true,
@@ -86,20 +87,24 @@ export function createServer(): McpServer {
     },
     async () => {
       const out = domains.map((d) => {
-        if (d.live) {
-          return { id: d.id, title: d.title, description: d.description, filters: d.filters, live: true };
-        }
-        const cached = readCache(d.id);
-        return {
+        const base = {
           id: d.id,
           title: d.title,
           description: d.description,
           filters: d.filters,
+          ...(d.specVersion ? { specVersion: d.specVersion } : {}),
+        };
+        if (d.live) {
+          return { ...base, live: true };
+        }
+        const cached = readCache(d.id);
+        return {
+          ...base,
           cachedItems: cached?.data.items.length ?? 0,
           extractedAt: cached?.extractedAt ?? null,
         };
       });
-      return text(out);
+      return text({ server: { name: "opf-br-mcp", version: PACKAGE_VERSION }, domains: out });
     }
   );
 

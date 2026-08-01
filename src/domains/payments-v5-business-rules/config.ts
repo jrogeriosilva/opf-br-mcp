@@ -1,6 +1,7 @@
 export const paymentsV5BusinessRulesConfig = {
   id: "payments-v5-business-rules",
   title: "API de Pagamentos v5 — Regras de negócio (SV)",
+  specVersion: "5.0.0",
   description:
     "Regras de negócio da API de Iniciação de Pagamentos (Pix) versão 5.0.0 do Open Finance Brasil, extraídas das " +
     "páginas Confluence de Serviços (SV): Informações Gerais (visão geral dos endpoints e dicionário de dados), " +

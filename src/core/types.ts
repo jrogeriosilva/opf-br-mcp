@@ -25,6 +25,8 @@ interface DomainBase {
   description: string;
   /** Filtros aceitos por search (pode ser vazio em domínios live). */
   filters: FilterSpec[];
+  /** Versão da spec de origem, quando o domínio embrulha uma (ex.: "5.0.0"). */
+  specVersion?: string;
 }
 
 /** Domínio extraído: extract() busca tudo, cache local com TTL, busca síncrona sobre os dados. */

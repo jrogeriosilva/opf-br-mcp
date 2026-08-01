@@ -25,6 +25,7 @@ export function createOpenApiDomain(config: OpenApiDomainConfig): ExtractedDomai
     id: config.id,
     title: config.title,
     description: config.description,
+    specVersion: config.specVersion,
     ttlHours: 72,
     filters: [
       { name: "path", description: `Substring no path do endpoint (ex.: ${config.pathExample})` },

@@ -1,6 +1,7 @@
 export const automaticPaymentsV2BusinessRulesConfig = {
   id: "automatic-payments-v2-business-rules",
   title: "API de Pagamentos Automáticos v2 — Regras de negócio (SV)",
+  specVersion: "2.2.0",
   description:
     "Regras de negócio da API de Pagamentos Automáticos (Pix Automático e Transferências Inteligentes) versão 2.2.0 " +
     "do Open Finance Brasil, extraídas das páginas Confluence de Serviços (SV): Informações Gerais (visão geral dos " +

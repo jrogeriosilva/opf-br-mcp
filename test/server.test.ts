@@ -107,8 +107,16 @@ describe("opf-br-mcp server", () => {
     const client = await connectedClient();
     const result = await client.callTool({ name: "list_domains", arguments: {} });
     const parsed = JSON.parse(firstText(result));
-    expect(parsed.map((d: { id: string }) => d.id)).toEqual(domainIds);
-    expect(parsed[0].filters.map((f: { name: string }) => f.name)).toContain("field");
+    expect(parsed.domains.map((d: { id: string }) => d.id)).toEqual(domainIds);
+    expect(parsed.domains[0].filters.map((f: { name: string }) => f.name)).toContain("field");
+  });
+
+  it("list_domains identifica a versão do server e a spec de cada domínio", async () => {
+    const client = await connectedClient();
+    const parsed = JSON.parse(firstText(await client.callTool({ name: "list_domains", arguments: {} })));
+    expect(parsed.server).toEqual({ name: "opf-br-mcp", version: PACKAGE_VERSION });
+    const payments = parsed.domains.find((d: { id: string }) => d.id === "payments-v5-openapi");
+    expect(payments.specVersion).toBe("5.0.0");
   });
 
   it("search usa cache semeado e devolve itens compactados", async () => {
@@ -219,7 +227,7 @@ describe("opf-br-mcp server", () => {
   it("list_domains marca o portal como live, sem estado de cache", async () => {
     const client = await connectedClient();
     const parsed = JSON.parse(firstText(await client.callTool({ name: "list_domains", arguments: {} })));
-    const portal = parsed.find((d: { id: string }) => d.id === "portal");
+    const portal = parsed.domains.find((d: { id: string }) => d.id === "portal");
     expect(portal.live).toBe(true);
     expect(portal).not.toHaveProperty("extractedAt");
   });

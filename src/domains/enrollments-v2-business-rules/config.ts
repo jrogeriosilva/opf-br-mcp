@@ -1,6 +1,7 @@
 export const enrollmentsV2BusinessRulesConfig = {
   id: "enrollments-v2-business-rules",
   title: "API de Vínculo de Dispositivo v2 — Regras de negócio (SV)",
+  specVersion: "2.2.0",
   description:
     "Regras de negócio da API de Vínculo de Dispositivo (Enrollments / Jornada Sem Redirecionamento) versão 2.2.0 " +
     "do Open Finance Brasil, extraídas das páginas Confluence de Serviços (SV): Informações Gerais, " +

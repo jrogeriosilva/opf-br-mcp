@@ -10,6 +10,10 @@ import { automaticPaymentsV2BusinessRulesDomain } from "../domains/automatic-pay
 import { paymentsCommonRulesDomain } from "../domains/payments-common-rules/index.js";
 import { paymentsImplementationGuidesDomain } from "../domains/payments-implementation-guides/index.js";
 import { consentsV3Domain } from "../domains/consents-v3-openapi/index.js";
+import { resourcesV3Domain } from "../domains/resources-v3-openapi/index.js";
+import { resourcesV3BusinessRulesDomain } from "../domains/resources-v3-business-rules/index.js";
+import { accountsV2Domain } from "../domains/accounts-v2-openapi/index.js";
+import { accountsV2BusinessRulesDomain } from "../domains/accounts-v2-business-rules/index.js";
 import { pcmOpenapiDomain } from "../domains/pcm-openapi/index.js";
 import { pcmBusinessRulesDomain } from "../domains/pcm-business-rules/index.js";
 import { jornadaOtimizadaDomain } from "../domains/jornada-otimizada/index.js";
@@ -31,6 +35,10 @@ export const domains: Domain[] = [
   paymentsCommonRulesDomain,
   paymentsImplementationGuidesDomain,
   consentsV3Domain,
+  resourcesV3Domain,
+  resourcesV3BusinessRulesDomain,
+  accountsV2Domain,
+  accountsV2BusinessRulesDomain,
   pcmOpenapiDomain,
   pcmBusinessRulesDomain,
   jornadaOtimizadaDomain,

@@ -50,6 +50,16 @@ const paymentsImplementationGuidesHtml = readFileSync(
 );
 const mqdHtml = readFileSync(new URL("./fixtures/mqd-page.html", import.meta.url), "utf8");
 const segurancaHtml = readFileSync(new URL("./fixtures/seguranca-page.html", import.meta.url), "utf8");
+const accountsV2Yaml = readFileSync(new URL("./fixtures/accounts-v2-spec.yml", import.meta.url), "utf8");
+const resourcesV3Yaml = readFileSync(new URL("./fixtures/resources-v3-spec.yml", import.meta.url), "utf8");
+const accountsV2BusinessRulesHtml = readFileSync(
+  new URL("./fixtures/accounts-v2-business-rules-page.html", import.meta.url),
+  "utf8"
+);
+const resourcesV3BusinessRulesHtml = readFileSync(
+  new URL("./fixtures/resources-v3-business-rules-page.html", import.meta.url),
+  "utf8"
+);
 const webhookYaml = readFileSync(new URL("./fixtures/webhook-v1-spec.yml", import.meta.url), "utf8");
 const participantsJson = readFileSync(new URL("./fixtures/participants.json", import.meta.url), "utf8");
 
@@ -124,10 +134,58 @@ const fixtureData: Record<string, () => DomainData> = {
     ]),
   }),
   "webhook-v1-openapi": () => ({ items: parseOpenApiSpec(webhookYaml, "webhook") }),
+  "accounts-v2-openapi": () => ({ items: parseOpenApiSpec(accountsV2Yaml, "accounts") }),
+  "resources-v3-openapi": () => ({ items: parseOpenApiSpec(resourcesV3Yaml, "resources") }),
+  "accounts-v2-business-rules": () => ({
+    items: buildPcmRulesItems([
+      { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(accountsV2BusinessRulesHtml) },
+    ]),
+  }),
+  "resources-v3-business-rules": () => ({
+    items: buildPcmRulesItems([
+      { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(resourcesV3BusinessRulesHtml) },
+    ]),
+  }),
   "participantes": () => ({ items: parseParticipants(participantsJson) }),
 };
 
 const extractDomains = domains.filter((d): d is ExtractedDomain => d.live === undefined);
+
+describe("pareamento <api>-v<major>-openapi ↔ <api>-v<major>-business-rules", () => {
+  // Dirigido pelo lado das regras: todo domínio de regras versionado precisa ter
+  // a spec correspondente. Fosse pelo lado da spec, um domínio de regras órfão
+  // (ou com id fora do padrão) simplesmente não formaria par e o teste seguiria
+  // verde — perdendo cobertura em silêncio. Domínios sem major no id ficam de
+  // fora por construção: pcm-* não é versionado, a fonte não declara versão.
+  const versionedRules = domains.filter((d) => /-v\d+-business-rules$/.test(d.id));
+  // Órfãos são pegos pelo teste acima; aqui só os pares completos.
+  const pairs = versionedRules
+    .map(
+      (rules) => [domains.find((d) => d.id === rules.id.replace(/-business-rules$/, "-openapi")), rules] as const
+    )
+    .filter((p): p is [(typeof domains)[number], (typeof domains)[number]] => p[0] !== undefined);
+
+  it.each(versionedRules.map((d) => d.id))("%s tem a spec pareada registrada", (id) => {
+    const spec = domains.find((d) => d.id === id.replace(/-business-rules$/, "-openapi"));
+    expect(spec, `${id} não tem o par -openapi no registry`).toBeDefined();
+  });
+
+  // As páginas de regras costumam demorar a acompanhar patches da spec, então
+  // divergir em minor/patch é esperado. Divergir no major significa que os dois
+  // domínios descrevem versões diferentes da API — aí o par está errado.
+  it.each(pairs.map(([spec, rules]) => [spec.id, spec, rules] as const))(
+    "%s compartilha o major com o par de regras",
+    (_id, spec, rules) => {
+      expect(spec.specVersion, `${spec.id} deve declarar specVersion`).toBeDefined();
+      expect(rules.specVersion, `${rules.id} deve declarar specVersion`).toBeDefined();
+      const major = (v: string) => v.split(".")[0];
+      expect(major(rules.specVersion!)).toBe(major(spec.specVersion!));
+      // e o major precisa ser o mesmo codificado no id dos dois domínios
+      expect(spec.id).toContain(`-v${major(spec.specVersion!)}-`);
+      expect(rules.id).toContain(`-v${major(rules.specVersion!)}-`);
+    }
+  );
+});
 
 describe.each(extractDomains.map((d) => [d.id, d] as const))("contrato do domínio %s", (id, domain) => {
   it("tem metadados válidos", () => {

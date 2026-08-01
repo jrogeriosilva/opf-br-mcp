@@ -1,0 +1,12 @@
+<h1>Visão Geral</h1>
+<p>A API Accounts viabiliza o compartilhamento das informações de contas de depósito à vista, contas de poupança e contas de pagamento pré-paga, tais como limites, transações e saldos.</p>
+<h2>Lista de contas</h2>
+<p>Obtém a lista de contas mantidas pelo cliente na instituição transmissora: (GET /accounts/v2/accounts)</p>
+<h2>Saldos da conta</h2>
+<p>Obtém os saldos da conta identificada por accountId: (GET /accounts/v2/accounts/{accountId}/balances)</p>
+<h1>Obrigatoriedade de informações de contraparte</h1>
+<p>Com a IN BCB nº 371, a partir de 02/05/23 o envio das informações de identificação de contraparte (CPF ou CNPJ) tornou-se obrigatório para transações de pagamento.</p>
+<table>
+  <tr><th>Cenário</th><th>Comportamento esperado</th></tr>
+  <tr><td>Contraparte não identificada</td><td>As informações únicas de contraparte não são identificadas para o cliente.</td></tr>
+</table>

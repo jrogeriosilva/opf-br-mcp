@@ -1,0 +1,24 @@
+import type { OpenApiDomainConfig } from "../_openapi/domain.js";
+
+export const accountsV2Config: OpenApiDomainConfig = {
+  id: "accounts-v2-openapi",
+  title: "API de Contas — spec OpenAPI 2.4.2",
+  description:
+    "Spec OpenAPI oficial da API de Contas (Accounts) do Open Finance Brasil, versão 2.4.2 — " +
+    "compartilhamento de contas de depósito à vista, poupança e pagamento pré-paga. " +
+    "Cobre listagem (GET /accounts), identificação (GET /accounts/{accountId}), saldos " +
+    "(GET /accounts/{accountId}/balances), transações (GET /accounts/{accountId}/transactions e " +
+    "/transactions-current) e limites de cheque especial (GET /accounts/{accountId}/overdraft-limits). " +
+    "É API de Dados Cadastrais e Transacionais: o consentimento que a habilita fica em consents-v3-openapi, " +
+    "e a listagem de recursos compartilhados em resources-v3-openapi. " +
+    "Itens type=operation (um por método+path), type=schema (payloads, ex.: AccountData, AccountBalancesData, " +
+    "AccountTransactionsData) e os components alvos dos $ref: type=response e type=parameter. " +
+    "Regras de negócio da mesma API em accounts-v2-business-rules. " +
+    "search devolve resumos; use get_item para o nó completo da spec — nas operações o campo " +
+    "`refs` traz os ids dos components referenciados, prontos para get_item.",
+  pathExample: "/accounts/{accountId}/transactions",
+  specName: "accounts",
+  specVersion: "2.4.2",
+  url: "https://openbanking-brasil.github.io/openapi/swagger-apis/accounts/2.4.2.yml",
+  retryDelaysMs: [2000, 4000, 8000, 16000],
+};

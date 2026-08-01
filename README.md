@@ -21,6 +21,10 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | `payments-common-rules` | Confluence público OFB (Serviços - SV) | Conteúdo comum aos produtos de Iniciação de Pagamentos (atores, Idempotência, Como Assinar o Payload, Convenções de data/fuso, Polling) — item por seção |
 | `payments-implementation-guides` | Confluence público OFB (Serviços - SV) | Guias de Implementação (Pix Automático, Agendamento Recorrente, Transferências Inteligentes, Liquidação de QR Codes) — item por seção |
 | `consents-v3-openapi` | GitHub Pages openbanking-brasil.github.io | Spec OpenAPI 3.3.1 da API de Consentimentos (Dados Cadastrais e Transacionais) |
+| `resources-v3-openapi` | GitHub Pages openbanking-brasil.github.io | Spec OpenAPI 3.1.0 da API de Recursos (`GET /resources`: status dos recursos compartilhados) |
+| `resources-v3-business-rules` | Confluence público OFB (Dados - DC) | Regras de negócio da API de Recursos 3.1.0 (Informações Gerais, Orientações) — item por seção |
+| `accounts-v2-openapi` | GitHub Pages openbanking-brasil.github.io | Spec OpenAPI 2.4.2 da API de Contas (listagem, saldos, transações, limites de cheque especial) |
+| `accounts-v2-business-rules` | Confluence público OFB (Dados - DC) | Regras de negócio da API de Contas 2.4.2 (Informações Gerais, Orientações — contraparte/IN BCB nº 371) — item por seção |
 | `pcm-openapi` | GitHub OpenBanking-Brasil/pcm-specs | Spec OpenAPI da PCM (reportes, hybrid-flow, opendata, consents/stock, credit-portabilities, payments/status) |
 | `pcm-business-rules` | Confluence público OFB | Regras de negócio da PCM (Reporte, Processamento, Divergências, Especificação Técnica, Manual de Integração) — item por seção |
 | `jornada-otimizada` | Confluence público OFB | Regras da Jornada Otimizada (Orientações Gerais, Transferências Inteligentes, Jornada sem Redirecionamento) — item por seção |

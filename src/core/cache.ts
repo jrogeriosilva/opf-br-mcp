@@ -18,14 +18,42 @@ function cachePath(domainId: string): string {
   return join(cacheDir(), `${domainId}.json`);
 }
 
+/**
+ * JSON válido não garante a forma esperada — um arquivo escrito por uma versão
+ * com outro layout, ou mexido por fora, passa pelo JSON.parse e só estoura mais
+ * adiante, em `entry.data.items`. Como o list_domains lê o cache de todos os
+ * domínios, um único arquivo assim derrubava o catálogo inteiro.
+ */
+function isCacheEntry(value: unknown): value is CacheEntry {
+  const entry = value as CacheEntry;
+  return (
+    typeof entry === "object" &&
+    entry !== null &&
+    typeof entry.extractedAt === "string" &&
+    typeof entry.packageVersion === "string" &&
+    typeof entry.data === "object" &&
+    entry.data !== null &&
+    Array.isArray(entry.data.items)
+  );
+}
+
 export function readCache(domainId: string): CacheEntry | null {
   const path = cachePath(domainId);
   if (!existsSync(path)) return null;
+  let parsed: unknown;
   try {
-    return JSON.parse(readFileSync(path, "utf8")) as CacheEntry;
+    parsed = JSON.parse(readFileSync(path, "utf8"));
   } catch {
     return null;
   }
+  if (!isCacheEntry(parsed)) {
+    // Tratar como cache ausente reaproveita o caminho de re-extração, mas em
+    // silêncio ninguém descobre qual arquivo está ruim: o aviso vai para stderr
+    // (stdout é exclusivo do JSON-RPC).
+    console.error(`[opf-br-mcp] cache de ${domainId} tem forma inesperada; ignorando (${path})`);
+    return null;
+  }
+  return parsed;
 }
 
 export function writeCache(domainId: string, data: DomainData, packageVersion: string): CacheEntry {

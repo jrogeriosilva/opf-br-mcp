@@ -31,6 +31,8 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | `mqd` | Confluence público OFB | Motor de Qualidade de Dados (Especificação Técnica, Arquitetura, Documentação da API, Manual de Instalação, Endpoints Validados, FAQ, Troubleshooting) — item por seção |
 | `webhook-v1-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 1.3.0 da API de Webhook (notificações de mudança de estado: pagamentos, enrollments, pagamentos automáticos) |
 | `seguranca` | Confluence público OFB | Segurança do Open Finance Brasil (Perfil de Segurança, FAPI, DCR, CIBA, Padrão de Certificados, Assinaturas, Casos de Erro, Redirecionamento App-to-App, Glossário, Versionamento) — item por seção |
+| `requisitos-nao-funcionais` | Confluence público OFB (Manual de APIs) | Requisitos não funcionais de todas as APIs (Desempenho, Disponibilidade, Timeout, Limites de tráfego, Limites operacionais, Indisponibilidade Programada) — item por seção |
+| `limites-por-endpoint` | Confluence público OFB (Manual de APIs) | SLA (p95), timeout, TPM, TPS e limite operacional de cada endpoint de todas as famílias de API — um item por endpoint |
 | `participantes` | Diretório OFB (data.directory.openbankingbrasil.org.br) | Organizações participantes, marcas (authorisation servers) e famílias de API suportadas com versões — um item por organização |
 | `portal` | Confluence público OFB (busca ao vivo) | Busca CQL em todo o Portal do Desenvolvedor (espaço OF) — sem cache, `query` obrigatória; fallback quando os domínios específicos não cobrem o assunto |
 
@@ -70,7 +72,7 @@ bem na janela de contexto de um agente, e despejá-la desperdiça tokens. A solu
 apenas o mínimo necessário em cada etapa do funil:
 
 1. **`list_domains`** — catálogo barato: quais domínios e filtros existem. Os
-   filtros idênticos a uma família inteira de domínios (os 8 `*-openapi`, os 11
+   filtros idênticos a uma família inteira de domínios (os 9 `*-openapi`, os 12
    de seções do Confluence) saem uma única vez em `filterSets`; cada domínio
    traz `filterSet` e só lista inline o que é próprio dele (em `*-openapi`,
    apenas `path`, cujo exemplo varia por API). Os filtros aceitos por um domínio

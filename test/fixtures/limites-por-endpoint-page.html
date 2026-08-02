@@ -1,0 +1,41 @@
+<h2>Dados do Cliente</h2>
+<h3>[DC] API Recursos</h3>
+<table>
+  <tbody>
+    <tr><th>[DC] API Recursos</th></tr>
+    <tr>
+      <th>Endpoint</th><th>Frequência</th><th>SLA (ms)*</th><th>Timeout (s)</th>
+      <th>TPM</th><th>TPS</th><th>Limite Operacional(consultas/mês)</th>
+    </tr>
+    <tr>
+      <td>GET /resources</td><td>Alta</td><td>1500</td><td>15</td>
+      <td>NA</td><td>300</td><td>NA</td>
+    </tr>
+  </tbody>
+</table>
+<h3>[DC] API Contas</h3>
+<table>
+  <tbody>
+    <tr><th>[DC] API Contas</th></tr>
+    <tr>
+      <th>Endpoint</th><th>Frequência</th><th>SLA (ms)*</th><th>Timeout (s)</th>
+      <th>TPM</th><th>TPS</th><th>Limite Operacional(consultas/mês)</th>
+    </tr>
+    <tr>
+      <td>GET /accounts</td><td>Baixa</td><td>4000</td><td>15</td>
+      <td>1000</td><td>300</td><td>8</td>
+    </tr>
+    <tr>
+      <td>GET ​/accounts​/{accountId}​/balances</td><td>Alta</td><td>1500</td><td>15</td>
+      <td>a) quando a quantidade de consentimentos ativos for &le; 6 milhões, aplica-se a tabela:<br>QCA | TPM<br>0 &lt; QCA &le; 1 000 000 &rarr; 2 500<br>1 000 000 &lt; QCA &le; 2 000 000 &rarr; 5 000<br>b) para QCA &gt; 6 000 000, o TPM é calculado em faixas de 2 milhões.</td>
+      <td>300</td><td>420</td>
+    </tr>
+  </tbody>
+</table>
+<h2>Legenda</h2>
+<table>
+  <tbody>
+    <tr><th>Sigla</th><th>Significado</th></tr>
+    <tr><td>NA</td><td>tabela sem coluna Endpoint — deve ser ignorada</td></tr>
+  </tbody>
+</table>

@@ -9,6 +9,8 @@ import { parseOpenApiSpec as parseConsentsV3 } from "../src/domains/_openapi/par
 import { buildItems as buildPcmRulesItems } from "../src/domains/_confluence-sections/domain.js";
 import { parseSections } from "../src/domains/_confluence-sections/parser.js";
 import { parseParticipants } from "../src/domains/participantes/parser.js";
+import { parseEndpointLimits } from "../src/domains/limites-por-endpoint/parser.js";
+import { buildItems as buildLimitItems } from "../src/domains/limites-por-endpoint/index.js";
 
 const pcmHtml = readFileSync(new URL("./fixtures/pcm-page.html", import.meta.url), "utf8");
 const paymentsYaml = readFileSync(new URL("./fixtures/payments-spec.yml", import.meta.url), "utf8");
@@ -62,6 +64,14 @@ const resourcesV3BusinessRulesHtml = readFileSync(
 );
 const webhookYaml = readFileSync(new URL("./fixtures/webhook-v1-spec.yml", import.meta.url), "utf8");
 const participantsJson = readFileSync(new URL("./fixtures/participants.json", import.meta.url), "utf8");
+const requisitosNaoFuncionaisHtml = readFileSync(
+  new URL("./fixtures/requisitos-nao-funcionais-page.html", import.meta.url),
+  "utf8"
+);
+const limitesPorEndpointHtml = readFileSync(
+  new URL("./fixtures/limites-por-endpoint-page.html", import.meta.url),
+  "utf8"
+);
 
 // Todo domínio novo DEVE registrar aqui um builder de dados de fixture.
 const fixtureData: Record<string, () => DomainData> = {
@@ -145,6 +155,22 @@ const fixtureData: Record<string, () => DomainData> = {
     items: buildPcmRulesItems([
       { pageId: "1", title: "Página Fixture", url: "u", sections: parseSections(resourcesV3BusinessRulesHtml) },
     ]),
+  }),
+  "requisitos-nao-funcionais": () => ({
+    items: buildPcmRulesItems([
+      {
+        pageId: "1",
+        title: "Página Fixture",
+        url: "u",
+        sections: parseSections(requisitosNaoFuncionaisHtml),
+      },
+    ]),
+  }),
+  "limites-por-endpoint": () => ({
+    items: buildLimitItems(
+      { pageId: "1", title: "Página Fixture", url: "u" },
+      parseEndpointLimits(limitesPorEndpointHtml)
+    ),
   }),
   "participantes": () => ({ items: parseParticipants(participantsJson) }),
 };

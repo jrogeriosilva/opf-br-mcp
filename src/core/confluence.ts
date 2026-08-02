@@ -26,8 +26,18 @@ export async function fetchConfluencePage(
   const apiUrl = `${baseUrl}/wiki/rest/api/content/${pageId}?expand=body.view`;
   const response = await fetchWithRetry(apiUrl, { retryDelaysMs, headers: HEADERS, signal });
   const json = (await response.json()) as ConfluenceResponse;
+  // Sem `body.view.value` a resposta não é o conteúdo expandido que pedimos (erro
+  // da API com 200, envelope diferente, expansão negada). Antes isso virava html
+  // vazio, 0 seções e um domínio vazio cacheado por 72h em silêncio. Página
+  // legitimamente vazia traz `value: ""` e continua passando.
+  const html = json?.body?.view?.value;
+  if (typeof html !== "string") {
+    throw new Error(
+      `resposta da página ${pageId} não traz body.view.value; não é conteúdo Confluence expandido`
+    );
+  }
   return {
-    html: json.body?.view?.value ?? "",
+    html,
     title: json.title,
     url: `${baseUrl}/wiki${json._links?.webui ?? ""}`,
   };

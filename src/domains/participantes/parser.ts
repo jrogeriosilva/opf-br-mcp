@@ -31,6 +31,15 @@ export interface ParticipantItem extends Item {
 /** Um item por organização; famílias de API agregadas de todos os authorisation servers. */
 export function parseParticipants(jsonText: string): ParticipantItem[] {
   const orgs = JSON.parse(jsonText) as Organisation[];
+  // Mesma classe da guarda nos parsers de spec: o diretório nunca devolve zero
+  // organizações, então lista vazia (ou outra forma) é fonte quebrada, não
+  // conteúdo — deixar passar cacheava um domínio vazio por 72h em silêncio.
+  if (!Array.isArray(orgs) || orgs.length === 0) {
+    throw new Error(
+      `resposta do diretório não é uma lista de organizações não-vazia; ` +
+        `início do conteúdo: ${JSON.stringify(jsonText.slice(0, 80))}`
+    );
+  }
   return orgs.map((org) => {
     const servers = org.AuthorisationServers ?? [];
     const families = new Set<string>();

@@ -108,3 +108,30 @@ describe("parseOpenApiSpec", () => {
     expect(header.refs).toEqual(["payments:schema:X-V"]);
   });
 });
+
+// Resposta 200 que não é a spec (página de erro, redirect, YAML de outra coisa)
+// devolvia 0 itens sem erro e ia parar no cache por 72h. Precisa lançar para o
+// getDomainData cair no cache anterior ou propagar a falha.
+describe("parseOpenApiSpec com resposta que não é spec", () => {
+  it.each([
+    ["vazio", ""],
+    ["HTML de erro servido com 200", "<!DOCTYPE html>\n<html><body><h1>404</h1></body></html>"],
+    ["YAML válido de outra coisa", "foo: bar\nbaz: 1"],
+    ["texto solto", "Not Found"],
+    ["objeto vazio", "{}"],
+    ["redirect de login", '<html><head><meta http-equiv="refresh" content="0;url=/login"></head></html>'],
+    ["lista no topo", "- a\n- b"],
+  ])("lança em vez de devolver vazio (%s)", (_caso, texto) => {
+    expect(() => parseOpenApiSpec(texto, "x")).toThrow(/não é uma spec OpenAPI/);
+  });
+
+  it("aceita spec só com components (sem paths)", () => {
+    const items = parseOpenApiSpec("components:\n  schemas:\n    Foo:\n      type: object", "x");
+    expect(items.map((i) => i.id)).toEqual(["x:schema:Foo"]);
+  });
+
+  it("aceita spec só com paths (sem components)", () => {
+    const items = parseOpenApiSpec("paths:\n  /a:\n    get:\n      summary: s", "x");
+    expect(items.map((i) => i.id)).toEqual(["x:GET /a"]);
+  });
+});

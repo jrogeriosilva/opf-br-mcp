@@ -41,3 +41,16 @@ describe("parseParticipants", () => {
     );
   });
 });
+
+// Resposta 200 com lista vazia ou envelope de erro virava domínio vazio no cache,
+// por 72h, sem erro — mesma classe da guarda nos parsers de spec.
+describe("parseParticipants com resposta que não é o diretório", () => {
+  it.each([
+    ["lista vazia", "[]"],
+    ["envelope de erro", '{"error":"unavailable"}'],
+    ["string", '"Not Found"'],
+    ["nulo", "null"],
+  ])("lança em vez de devolver vazio (%s)", (_caso, texto) => {
+    expect(() => parseParticipants(texto)).toThrow(/lista de organizações não-vazia/);
+  });
+});

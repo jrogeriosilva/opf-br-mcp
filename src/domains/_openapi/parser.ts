@@ -44,7 +44,23 @@ function refsOf(node: unknown, specName: string): string[] {
 }
 
 export function parseOpenApiSpec(yamlText: string, specName: string): Item[] {
-  const spec = parse(yamlText) as OpenApiSpec;
+  const parsed: unknown = parse(yamlText);
+  // Uma resposta 200 que não é a spec — página de erro, redirect para login, YAML
+  // de outra coisa — atravessava daqui como 0 itens e ia parar no cache por 72h,
+  // sem erro nenhum. Falhando aqui, o getDomainData cai no cache anterior (stale)
+  // ou propaga o erro, que é o comportamento certo para fonte quebrada.
+  if (
+    parsed === null ||
+    typeof parsed !== "object" ||
+    Array.isArray(parsed) ||
+    (!("paths" in parsed) && !("components" in parsed))
+  ) {
+    throw new Error(
+      `resposta de ${specName} não é uma spec OpenAPI (sem "paths" nem "components"); ` +
+        `início do conteúdo: ${JSON.stringify(yamlText.slice(0, 80))}`
+    );
+  }
+  const spec = parsed as OpenApiSpec;
   const items: Item[] = [];
 
   for (const [path, pathItem] of Object.entries(spec.paths ?? {})) {

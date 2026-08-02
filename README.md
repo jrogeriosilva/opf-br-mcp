@@ -39,7 +39,9 @@ acesso token-eficiente às regras do Open Finance Brasil.
 - `list_domains()` — descoberta: domínios, filtros, versão da spec de origem e estado do cache
 - `search(domain, query?, filters?, limit?, offset?)` — busca filtrada, retorno compacto
 - `get_item(domain, id)` — registro completo
-- `refresh(domain?)` — força re-extração das fontes
+- `refresh(domain?)` — força re-extração das fontes. Prefira passar `domain`:
+  sem ele o server atualiza o que couber em 45s (o timeout padrão do cliente MCP
+  é 60s) e devolve o restante em `pendentes`, para o agente retomar um a um
 
 Fluxo recomendado para o agente: `list_domains` → `search` → `get_item`.
 

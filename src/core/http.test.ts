@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchWithRetry } from "./http.js";
+import { fetchWithRetry, sleep } from "./http.js";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -66,5 +66,45 @@ describe("fetchWithRetry", () => {
     const res = await fetchWithRetry("https://example.test/x", { retryDelaysMs: [0] });
     expect(res.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("sleep", () => {
+  it("acorda na hora quando o signal é abortado", async () => {
+    const ac = new AbortController();
+    setTimeout(() => ac.abort(), 20);
+    const t0 = Date.now();
+    await sleep(5000, ac.signal);
+    expect(Date.now() - t0).toBeLessThan(500);
+  });
+
+  it("signal já abortado resolve imediatamente", async () => {
+    const t0 = Date.now();
+    await sleep(5000, AbortSignal.abort());
+    expect(Date.now() - t0).toBeLessThan(100);
+  });
+
+  it("sem signal, espera o tempo pedido", async () => {
+    const t0 = Date.now();
+    await sleep(60);
+    expect(Date.now() - t0).toBeGreaterThanOrEqual(50);
+  });
+});
+
+// Antes o abort só era percebido no topo da iteração seguinte, então o backoff
+// era dormido por inteiro — até 16s com os delays em uso.
+describe("fetchWithRetry cancelado durante o backoff", () => {
+  it("retorna sem esperar o backoff inteiro", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: false, status: 503, statusText: "Unavailable" }) as unknown as Response)
+    );
+    const ac = new AbortController();
+    setTimeout(() => ac.abort(), 30);
+    const t0 = Date.now();
+    await expect(
+      fetchWithRetry("https://exemplo/x", { retryDelaysMs: [5000, 5000], signal: ac.signal })
+    ).rejects.toThrow();
+    expect(Date.now() - t0).toBeLessThan(1000);
   });
 });

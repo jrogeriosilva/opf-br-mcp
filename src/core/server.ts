@@ -33,6 +33,16 @@ function findDomain(id: string): Domain | undefined {
 
 const validIds = () => domains.map((d) => d.id).join(", ");
 
+/**
+ * Teto para o refresh sem `domain`. Percorrer todos leva 3-4 min (75 páginas do
+ * Confluence com 2s de intervalo deliberado entre elas), mas o timeout padrão do
+ * cliente MCP é 60s e `resetTimeoutOnProgress` vem desligado: o trabalho
+ * terminava e mesmo assim o agente via timeout. Paralelizar não resolveria —
+ * todas as páginas saem do mesmo host, e o intervalo existe para ser educado com
+ * a fonte. Então o refresh faz o que cabe e devolve o resto em `pendentes`.
+ */
+const REFRESH_BUDGET_MS = 45_000;
+
 const domainIdSchema = z
   .enum(domains.map((d) => d.id) as [string, ...string[]])
   .describe("Id do domínio (ver list_domains)");
@@ -58,7 +68,8 @@ function extractContext(
   };
 }
 
-export function createServer(): McpServer {
+/** `refreshBudgetMs` só existe para o teste conseguir esgotar o orçamento sem esperar 45s. */
+export function createServer(refreshBudgetMs: number = REFRESH_BUDGET_MS): McpServer {
   const server = new McpServer(
     { name: "opf-br-mcp", version: PACKAGE_VERSION },
     {
@@ -268,7 +279,9 @@ export function createServer(): McpServer {
       title: "Re-extrair fontes",
       description:
         "Força re-extração das fontes públicas (ignora o TTL de 72h do cache). " +
-        "Sem `domain`, atualiza todos. Use quando suspeitar de dados desatualizados.",
+        "Use quando suspeitar de dados desatualizados. Prefira passar `domain`: " +
+        "sem ele o server atualiza o que couber em 45s e devolve o restante em " +
+        "`pendentes`, que você deve refazer chamando refresh(domain) para cada id.",
       inputSchema: {
         domain: domainIdSchema.optional().describe("Id do domínio; omita para todos"),
       },
@@ -284,7 +297,15 @@ export function createServer(): McpServer {
         (d): d is ExtractedDomain => !d.live && (!domain || d.id === domain)
       );
       const report: Record<string, string> = {};
+      const pendentes: string[] = [];
+      const inicio = Date.now();
       for (const d of targets) {
+        // O orçamento só corta a varredura de todos: quando o `domain` foi pedido
+        // explicitamente, o trabalho é um só e vai até o fim.
+        if (!domain && Date.now() - inicio > refreshBudgetMs) {
+          pendentes.push(d.id);
+          continue;
+        }
         try {
           const { data } = await getDomainData(d, true, extractContext(extra));
           report[d.id] = `ok: ${data.items.length} itens`;
@@ -292,7 +313,17 @@ export function createServer(): McpServer {
           report[d.id] = `erro: ${(err as Error).message}`;
         }
       }
-      return text(report);
+      return text({
+        atualizados: report,
+        ...(pendentes.length > 0
+          ? {
+              pendentes,
+              nota:
+                `Parei em ${refreshBudgetMs / 1000}s para não estourar o timeout do cliente. ` +
+                `Chame refresh(domain) para cada id em pendentes.`,
+            }
+          : {}),
+      });
     }
   );
 

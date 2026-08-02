@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { DomainData } from "../../core/types.js";
 import {
   buildItems,
@@ -112,5 +112,57 @@ describe("createConfluenceSectionsDomain", () => {
     expect(domain.search(data, "vinculo dispositivo")).toHaveLength(1);
     expect(domain.search(data, "vinculo inexistente")).toEqual([]);
     expect(domain.search(data, undefined, { heading: "vinculo" })).toHaveLength(1);
+  });
+});
+
+// A checagem de abort ficava ANTES da espera entre páginas, então um
+// cancelamento durante o intervalo só era percebido depois de disparar a página
+// seguinte. Invertida a ordem, tem que parar sem buscar a próxima.
+describe("cancelamento durante o intervalo entre páginas", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  const tresPaginas: ConfluenceSectionsConfig = {
+    ...testConfig,
+    interRequestDelayMs: 5000,
+    pages: [
+      { pageId: "1", title: "Um" },
+      { pageId: "2", title: "Dois" },
+      { pageId: "3", title: "Três" },
+    ],
+  };
+
+  function stubOk() {
+    const spy = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: async () => ({ title: "T", body: { view: { value: html } }, _links: { webui: "/p" } }),
+    }));
+    vi.stubGlobal("fetch", spy);
+    return spy;
+  }
+
+  it("para na página em curso, sem buscar a próxima, e não espera o intervalo inteiro", async () => {
+    const spy = stubOk();
+    const ac = new AbortController();
+    setTimeout(() => ac.abort(), 50);
+    const t0 = Date.now();
+
+    await expect(
+      createConfluenceSectionsDomain(tresPaginas).extract({ signal: ac.signal })
+    ).rejects.toThrow(/cancelada/);
+
+    expect(spy).toHaveBeenCalledTimes(1); // só a página 1; a 2 nunca é buscada
+    expect(Date.now() - t0).toBeLessThan(1000); // antes dormiria os 5000ms
+  });
+
+  it("sem cancelamento, percorre todas as páginas na ordem", async () => {
+    const spy = stubOk();
+    const data = await createConfluenceSectionsDomain({
+      ...tresPaginas,
+      interRequestDelayMs: 0,
+    }).extract();
+    expect(spy).toHaveBeenCalledTimes(3);
+    expect([...new Set(data.items.map((i) => String(i.id).split(":")[0]))]).toEqual(["1", "2", "3"]);
   });
 });

@@ -86,8 +86,10 @@ export function createConfluenceSectionsDomain(config: ConfluenceSectionsConfig)
       const total = config.pages.length;
       const pages: ConfluencePageSections[] = [];
       for (const [i, page] of config.pages.entries()) {
+        // Espera antes de checar: assim o cancelamento durante o intervalo entre
+        // páginas é percebido aqui, e não só depois de disparar a próxima página.
+        if (i > 0) await sleep(config.interRequestDelayMs, ctx?.signal);
         if (ctx?.signal?.aborted) throw new Error("Extração cancelada pelo cliente");
-        if (i > 0) await sleep(config.interRequestDelayMs);
         ctx?.onProgress?.(i, total, `Extraindo "${page.title}"`);
         const { html, url } = await fetchConfluencePage(
           config.confluenceBaseUrl,

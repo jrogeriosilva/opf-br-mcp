@@ -1,5 +1,22 @@
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+/**
+ * Espera `ms`, mas acorda na hora se `signal` for abortado. Sem isso um
+ * cancelamento do cliente ficava preso até o fim da espera — até 16s no último
+ * backoff, mais 2s entre páginas do Confluence.
+ *
+ * Resolve em vez de rejeitar: quem chama já checa `aborted` logo depois, e
+ * rejeitar trocaria o erro que fetchWithRetry propaga hoje.
+ */
+export function sleep(ms: number, signal?: AbortSignal): Promise<void> {
+  if (signal?.aborted) return Promise.resolve();
+  return new Promise((resolve) => {
+    const done = () => {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", done);
+      resolve();
+    };
+    const timer = setTimeout(done, ms);
+    signal?.addEventListener("abort", done, { once: true });
+  });
 }
 
 export interface RetryOptions {
@@ -13,7 +30,10 @@ export async function fetchWithRetry(url: string, opts: RetryOptions): Promise<R
   let lastError: Error | undefined;
   for (let attempt = 0; attempt <= opts.retryDelaysMs.length; attempt++) {
     if (opts.signal?.aborted) break;
-    if (attempt > 0) await sleep(opts.retryDelaysMs[attempt - 1]);
+    if (attempt > 0) {
+      await sleep(opts.retryDelaysMs[attempt - 1], opts.signal);
+      if (opts.signal?.aborted) break;
+    }
     const timeout = AbortSignal.timeout(30_000);
     const signal = opts.signal ? AbortSignal.any([opts.signal, timeout]) : timeout;
     let response: Response;

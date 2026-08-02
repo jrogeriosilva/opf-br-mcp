@@ -95,8 +95,10 @@ export const pcmDomain: ExtractedDomain = {
     const total = pcmConfig.pages.length;
     const pages: PcmPage[] = [];
     for (const [i, page] of pcmConfig.pages.entries()) {
+      // Espera antes de checar: assim o cancelamento durante o intervalo entre
+      // páginas é percebido aqui, e não só depois de disparar a próxima página.
+      if (i > 0) await sleep(pcmConfig.interRequestDelayMs, ctx?.signal);
       if (ctx?.signal?.aborted) throw new Error("Extração cancelada pelo cliente");
-      if (i > 0) await sleep(pcmConfig.interRequestDelayMs);
       ctx?.onProgress?.(i, total, `Extraindo "${page.title}"`);
       const { html, url } = await fetchConfluencePage(
         pcmConfig.confluenceBaseUrl,

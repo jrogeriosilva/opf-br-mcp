@@ -51,8 +51,8 @@ function stubPortalFetch() {
   );
 }
 
-async function connectedClient() {
-  const server = createServer();
+async function connectedClient(refreshBudgetMs?: number) {
+  const server = createServer(refreshBudgetMs);
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);
   const client = new Client({ name: "test", version: "0.0.0" });
@@ -290,6 +290,39 @@ describe("opf-br-mcp server", () => {
     const parsed = JSON.parse(firstText(result));
     expect(parsed.sections.length).toBeGreaterThan(0);
     expect(parsed.sections[0].heading).toBe("Seção");
+  });
+
+  // Percorrer todos os domínios leva 3-4 min contra um timeout de 60s no cliente:
+  // o trabalho terminava e mesmo assim o agente via timeout. Agora o refresh sem
+  // `domain` faz o que cabe em 45s e devolve o resto para o agente retomar.
+  it("refresh sem domain respeita o orçamento e devolve os pendentes", async () => {
+    // Orçamento negativo esgota antes do primeiro domínio: ninguém extrai, nada
+    // toca a rede. (Com 0 o primeiro domínio ainda passaria, porque no mesmo
+    // milissegundo o decorrido é 0.)
+    const client = await connectedClient(-1);
+    const parsed = JSON.parse(firstText(await client.callTool({ name: "refresh", arguments: {} })));
+
+    expect(parsed.atualizados).toEqual({});
+    expect(parsed.pendentes).toEqual(domains.filter((d) => !d.live).map((d) => d.id));
+    expect(parsed.nota).toContain("refresh(domain)");
+  });
+
+  it("refresh com domain explícito ignora o orçamento", async () => {
+    // 404 é erro permanente: fetchWithRetry lança sem backoff, então a extração
+    // falha rápido e o teste não espera os 30s de retry.
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: false, status: 404, statusText: "Not Found" }))
+    );
+    const client = await connectedClient(-1);
+    const parsed = JSON.parse(
+      firstText(await client.callTool({ name: "refresh", arguments: { domain: "mqd" } }))
+    );
+
+    // Foi tentado apesar do orçamento zerado, e não virou pendente.
+    expect(Object.keys(parsed.atualizados)).toEqual(["mqd"]);
+    expect(parsed.atualizados.mqd).toMatch(/^erro:/);
+    expect(parsed.pendentes).toBeUndefined();
   });
 
   it("refresh no portal explica que domínio live não tem cache", async () => {

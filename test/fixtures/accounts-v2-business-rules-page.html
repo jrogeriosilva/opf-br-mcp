@@ -1,9 +1,13 @@
-<h1>Visão Geral</h1>
-<p>A API Accounts viabiliza o compartilhamento das informações de contas de depósito à vista, contas de poupança e contas de pagamento pré-paga, tais como limites, transações e saldos.</p>
-<h2>Lista de contas</h2>
+<h1><strong>1. Introdução</strong></h1>
+<p>A API de Contas no âmbito do Open Finance Brasil tem por finalidade viabilizar o compartilhamento padronizado, seguro e interoperável de informações relativas a Conta de Depósito à Vista, Conta Poupança e Conta de Pagamento Pré-Paga.</p>
+<h2><strong>1.1 Contexto</strong></h2>
+<p>O documento de requisitos de produto especifica as informações mínimas, atributos, comportamentos e regras de negócio a serem observados pelas Instituições Participantes.</p>
+<h1><strong>3. Funcionalidades</strong></h1>
+<h2><strong>3.1 Informações sobre contas</strong></h2>
+<h3><strong>3.1.1 Regras para listagem de contas</strong></h3>
 <p>Obtém a lista de contas mantidas pelo cliente na instituição transmissora: (GET /accounts/v2/accounts)</p>
-<h2>Saldos da conta</h2>
-<p>Obtém os saldos da conta identificada por accountId: (GET /accounts/v2/accounts/{accountId}/balances)</p>
+<h2><strong>3.4 Informações sobre saldos reservados/caixinhas</strong></h2>
+<p>Obtém os saldos reservados da conta identificada por accountId: (GET /accounts/v2/accounts/{accountId}/reserved-balances)</p>
 <h1>Obrigatoriedade de informações de contraparte</h1>
 <p>Com a IN BCB nº 371, a partir de 02/05/23 o envio das informações de identificação de contraparte (CPF ou CNPJ) tornou-se obrigatório para transações de pagamento.</p>
 <table>

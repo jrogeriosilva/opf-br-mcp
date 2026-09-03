@@ -23,10 +23,11 @@ info:
     \  - permissions:\n    - GET: **ACCOUNTS_BALANCES_READ**\n### `/accounts/{accountId}/transactions`\n\
     \  - permissions:\n    - GET: **ACCOUNTS_TRANSACTIONS_READ**\n### `/accounts/{accountId}/transactions-current`\n\
     \  - permissions:\n    - GET: **ACCOUNTS_TRANSACTIONS_READ**\n### `/accounts/{accountId}/overdraft-limits`\n\
-    \  - permissions:\n    - GET: **ACCOUNTS_OVERDRAFT_LIMITS_READ**\n\n## Data de imutabilidade por tipo\
-    \ de transação​\nO identificador de transações de contas é de envio obrigatório no Open Finance Brasil.\
-    \ De acordo com o tipo da transação deve haver o envio de um identificador único, estável e imutável\
-    \ em D0 ou D+1, conforme tabela abaixo\n```\n|---------------------------------------|-------------------------|-----------------------|\n\
+    \  - permissions:\n    - GET: **ACCOUNTS_OVERDRAFT_LIMITS_READ**\n### `/accounts/{accountId}/reserved-balances`\n\
+    \  - permissions:\n    - GET: **ACCOUNTS_BALANCES_READ**\n\n## Data de imutabilidade por tipo de transação​\n\
+    O identificador de transações de contas é de envio obrigatório no Open Finance Brasil. De acordo com\
+    \ o tipo da transação deve haver o envio de um identificador único, estável e imutável em D0 ou D+1,\
+    \ conforme tabela abaixo\n```\n|---------------------------------------|-------------------------|-----------------------|\n\
     | Tipo de Transação                     | Data da Obrigatoriedade | Data da Imutabilidade |\n|---------------------------------------|-------------------------|-----------------------|\n\
     | TED                                   | DO                      | DO                    |\n|---------------------------------------|-------------------------|-----------------------|\n\
     | PIX                                   | DO                      | DO                    |\n|---------------------------------------|-------------------------|-----------------------|\n\
@@ -48,7 +49,7 @@ info:
     | OUTROS                                | DO                      | D+1                   |\n|---------------------------------------|-------------------------|-----------------------|\n\
     ```\n\nPara consultar as regras aplicáveis ao comportamento do transacionID de acordo com o status\
     \ da transação, consultar a página [Orientações - Contas](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/193658890)\n"
-  version: 2.4.2
+  version: 2.5.1
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
@@ -56,6 +57,11 @@ info:
     name: Governança do Open Finance Brasil – Especificações
     email: gt-interfaces@openbankingbr.org
     url: https://openbanking-brasil.github.io/areadesenvolvedor/
+servers:
+- url: https://api.banco.com.br/open-banking/accounts/v2
+  description: Servidor de Produção
+- url: https://apih.banco.com.br/open-banking/accounts/v2
+  description: Servidor de Homologação
 paths:
   /accounts:
     get:
@@ -79,45 +85,59 @@ paths:
         '200':
           $ref: '#/components/responses/OKResponseAccountList'
         '400':
-          $ref: '#/components/responses/BadRequestWithAdditionalProperties'
+          $ref: '#/components/responses/BadRequestMetaSingle'
         '401':
-          $ref: '#/components/responses/UnauthorizedWithAdditionalProperties'
+          $ref: '#/components/responses/UnauthorizedMetaSingle'
         '403':
-          $ref: '#/components/responses/ForbiddenWithAdditionalProperties'
+          $ref: '#/components/responses/ForbiddenMetaSingle'
         '404':
-          $ref: '#/components/responses/NotFoundWithAdditionalProperties'
+          $ref: '#/components/responses/NotFoundMetaSingle'
         '405':
-          $ref: '#/components/responses/MethodNotAllowedWithAdditionalProperties'
+          $ref: '#/components/responses/MethodNotAllowedMetaSingle'
         '406':
-          $ref: '#/components/responses/NotAcceptableWithAdditionalProperties'
+          $ref: '#/components/responses/NotAcceptableMetaSingle'
         '422':
-          $ref: '#/components/responses/UnprocessableEntityWithAdditionalProperties'
+          $ref: '#/components/responses/UnprocessableEntityMetaSingle'
         '423':
-          $ref: '#/components/responses/LockedWithAdditionalProperties'
+          $ref: '#/components/responses/LockedMetaSingle'
         '429':
-          $ref: '#/components/responses/TooManyRequestsWithAdditionalProperties'
+          $ref: '#/components/responses/TooManyRequestsMetaSingle'
         '500':
-          $ref: '#/components/responses/InternalServerErrorWithAdditionalProperties'
+          $ref: '#/components/responses/InternalServerErrorMetaSingle'
         '504':
-          $ref: '#/components/responses/GatewayTimeoutWithAdditionalProperties'
+          $ref: '#/components/responses/GatewayTimeoutMetaSingle'
         '529':
-          $ref: '#/components/responses/SiteIsOverloadedWithAdditionalProperties'
+          $ref: '#/components/responses/SiteIsOverloadedMetaSingle'
         default:
-          $ref: '#/components/responses/DefaultWithAdditionalProperties'
+          $ref: '#/components/responses/DefaultMetaSingle'
       security:
       - OpenId:
         - openid
         OAuth2Security:
         - consent:consentId
         - accounts
-  /accounts/{accountId}/balances:
+  /accounts/{accountId}/reserved-balances:
     get:
       tags:
       - Accounts
-      summary: Obtém os saldos da conta identificada por accountId.
-      operationId: accountsGetAccountsAccountIdBalances
-      description: Método para obter os saldos da conta de depósito à vista, poupança ou pagamento pré-paga
-        identificada por accountId mantida pelo cliente na instituição transmissora.
+      summary: Obtém os saldos reservados em produtos caixinhas/reserva.
+      operationId: accountsGetAccountsAccountIdReservedBalances
+      description: 'Método para obter os saldos reservados em produtos caixinhas/reserva.
+
+
+        [RESTRIÇÃO] Está no escopo de compartilhamento da API Contas: Reservas sem rendimento, como forma
+        se separar dinheiro para gasto futuro, e Reservas com rendimento, mas não atreladas a um investimento
+        associado ao CPF/CNPJ do cliente.
+
+
+        Nos casos em que o produto é ofertado pela transmissora mas o cliente não possui reserva de saldo,
+        a listagem do endpoint reserved-balances deve vir vazia, com status code 200.
+
+
+        Para instituições que não possuam o produto reserva de saldo, deve ser retornado o HTTP Status
+        Code 404 – Not Found, seguindo os padrões de response para as APIs do ecossistema.
+
+        '
       parameters:
       - $ref: '#/components/parameters/Authorization'
       - $ref: '#/components/parameters/xFapiAuthDate'
@@ -125,35 +145,37 @@ paths:
       - $ref: '#/components/parameters/xFapiInteractionId'
       - $ref: '#/components/parameters/xCustomerUserAgent'
       - $ref: '#/components/parameters/accountId'
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
       responses:
         '200':
-          $ref: '#/components/responses/OKResponseAccountBalances'
+          $ref: '#/components/responses/OKResponseAccountReservedBalances'
         '400':
-          $ref: '#/components/responses/BadRequestWithAdditionalProperties'
+          $ref: '#/components/responses/BadRequestMetaSingle'
         '401':
-          $ref: '#/components/responses/UnauthorizedWithAdditionalProperties'
+          $ref: '#/components/responses/UnauthorizedMetaSingle'
         '403':
-          $ref: '#/components/responses/ForbiddenWithAdditionalProperties'
+          $ref: '#/components/responses/ForbiddenMetaSingle'
         '404':
-          $ref: '#/components/responses/NotFoundWithAdditionalProperties'
+          $ref: '#/components/responses/NotFoundMetaSingle'
         '405':
-          $ref: '#/components/responses/MethodNotAllowedWithAdditionalProperties'
+          $ref: '#/components/responses/MethodNotAllowedMetaSingle'
         '406':
-          $ref: '#/components/responses/NotAcceptableWithAdditionalProperties'
+          $ref: '#/components/responses/NotAcceptableMetaSingle'
         '422':
-          $ref: '#/components/responses/UnprocessableEntityWithAdditionalProperties'
+          $ref: '#/components/responses/UnprocessableEntityMetaSingle'
         '423':
-          $ref: '#/components/responses/LockedWithAdditionalProperties'
+          $ref: '#/components/responses/LockedMetaSingle'
         '429':
-          $ref: '#/components/responses/TooManyRequestsWithAdditionalProperties'
+          $ref: '#/components/responses/TooManyRequestsMetaSingle'
         '500':
-          $ref: '#/components/responses/InternalServerErrorWithAdditionalProperties'
+          $ref: '#/components/responses/InternalServerErrorMetaSingle'
         '504':
-          $ref: '#/components/responses/GatewayTimeoutWithAdditionalProperties'
+          $ref: '#/components/responses/GatewayTimeoutMetaSingle'
         '529':
-          $ref: '#/components/responses/SiteIsOverloadedWithAdditionalProperties'
+          $ref: '#/components/responses/SiteIsOverloadedMetaSingle'
         default:
-          $ref: '#/components/responses/DefaultWithAdditionalProperties'
+          $ref: '#/components/responses/DefaultMetaSingle'
       security:
       - OpenId:
         - openid
@@ -161,6 +183,520 @@ paths:
         - consent:consentId
         - accounts
 components:
+  schemas:
+    AccountData:
+      type: object
+      required:
+      - brandName
+      - companyCnpj
+      - type
+      - compeCode
+      - number
+      - accountId
+      properties:
+        brandName:
+          type: string
+          description: Nome da Marca reportada pelo participante no Open Finance. Recomenda-se utilizar,
+            sempre que possível, o mesmo nome de marca atribuído no campo do diretório Customer Friendly
+            Server Name (Authorisation Server).
+          maxLength: 80
+          pattern: '[\w\W\s]*'
+          example: Organização A
+        companyCnpj:
+          type: string
+          maxLength: 14
+          pattern: ^[0-9A-Z]{12}[0-9]{2}$
+          description: Registro completo do CNPJ da instituição responsável pelo Cadastro - o CNPJ corresponde
+            a representação alfanumérica da inscrição no Cadastro de Pessoa Jurídica. Deve-se ter apenas
+            os caracteres do CNPJ, sem máscara.
+          example: '21128159000166'
+        type:
+          $ref: '#/components/schemas/EnumAccountType'
+        compeCode:
+          type: string
+          description: Código identificador atribuído pelo Banco Central do Brasil às instituições participantes
+            do STR (Sistema de Transferência de reservas).O Compe (Sistema de Compensação de Cheques e
+            Outros Papéis) é um sistema que identifica e processa as compensações bancárias. Ele é representado
+            por um código de três dígitos que serve como identificador de bancos, sendo assim, cada instituição
+            bancária possui um número exclusivo
+          pattern: ^\d{3}$
+          maxLength: 3
+          example: '001'
+        branchCode:
+          type: string
+          description: 'Código da Agência detentora da conta. (Agência é a dependência destinada ao atendimento
+            aos clientes, ao público em geral e aos associados de cooperativas de crédito, no exercício
+            de atividades da instituição, não podendo ser móvel ou transitória)
+
+
+            [Restrição] Obrigatoriamente deve ser preenchido quando o campo "type" for diferente de CONTA_PAGAMENTO_PRE_PAGA.
+
+            '
+          pattern: ^\d{4}$
+          maxLength: 4
+          example: '6272'
+        number:
+          type: string
+          description: Número da conta
+          pattern: ^\d{8,20}$
+          maxLength: 20
+          example: '94088392'
+        checkDigit:
+          type: string
+          description: 'Dígito da conta
+
+
+            [Restrição] Obrigatoriamente deve ser preenchido quando o campo `type` for diferente de conta
+            pré-paga. Nos casos em que a conta pré-paga possua dígito, o envio é obrigatório.
+
+            '
+          pattern: '[\w\W\s]*'
+          maxLength: 1
+          example: '4'
+        accountId:
+          type: string
+          description: Identifica de forma única  a conta do cliente, mantendo as regras de imutabilidade
+            dentro da instituição transmissora.
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9-]{0,99}$
+          maxLength: 100
+          minLength: 1
+          example: '92792126019929279212650822221989319252576'
+    AccountReservedBalancesData:
+      type: array
+      description: Lista de caixinhas/reservas
+      minItems: 0
+      items:
+        type: object
+        required:
+        - reservedIdentification
+        - availableAmount
+        properties:
+          reservedName:
+            type: string
+            description: Nome dado pelo usuário para a reserva
+            pattern: ^[^\s][\w\W\s]*[^\s]$
+            maxLength: 248
+            minLength: 5
+            example: Caixinha Paras Férias
+          reservedIdentification:
+            type: string
+            description: Identificador único da reserva
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            maxLength: 36
+            minLength: 1
+            example: d78fc4e5-37ca-4da3-adf2-9b082bf92280
+          availableAmount:
+            type: array
+            description: Saldo que se encontra disponível na reserva
+            minLength: 1
+            items:
+              type: object
+              required:
+              - amount
+              - currency
+              properties:
+                amount:
+                  type: string
+                  description: Valor relacionado ao objeto.
+                  format: double
+                  pattern: ^\d{1,15}\.\d{2,4}$
+                  maxLength: 20
+                  minLength: 4
+                  example: '1000.0400'
+                currency:
+                  type: string
+                  description: Moeda referente ao valor monetário, seguindo o modelo ISO-4217.
+                  pattern: ^[A-Z]{3}$
+                  maxLength: 3
+                  example: BRL
+                remuneration:
+                  type: object
+                  description: Remuneração aplicada a reserva
+                  required:
+                  - rateType
+                  - indexer
+                  - calculation
+                  - ratePeriodicity
+                  properties:
+                    preFixedRate:
+                      type: string
+                      description: "Taxa de remuneração pré fixada para a reserva de saldo. p.ex. 0.014500.\
+                        \ O preenchimento deve respeitar as 6 casas decimais, mesmo que venham preenchidas\
+                        \ com zeros(representação de porcentagem p.ex: 0.150000. Este valor representa\
+                        \ 15%. O valor 1 representa 100%). \n\n[Restrição] Campo de preenchimento obrigatório\
+                        \ pelas participantes quando campo `postFixedIndexerPercentage` não for preenchido\n"
+                      format: double
+                      pattern: ^\d{1}\.\d{6}$
+                      minLength: 8
+                      maxLength: 8
+                      example: '0.300000'
+                    postFixedIndexerPercentage:
+                      type: string
+                      description: "Percentual do indexador pós fixado para a reserva de saldo. p.ex.\
+                        \ 0.014500. O preenchimento deve respeitar as 6 casas decimais, mesmo que venham\
+                        \ preenchidas com zeros(representação de porcentagem p.ex: 0.150000. Este valor\
+                        \ representa 15%. O valor 1 representa 100%). \n\n[Restrição] Campo de preenchimento\
+                        \ obrigatório pelas participantes quando campo `preFixedRate` não for preenchido\n"
+                      format: double
+                      pattern: ^\d{1}\.\d{6}$
+                      minLength: 8
+                      maxLength: 8
+                      example: '0.300000'
+                    rateType:
+                      type: string
+                      description: Tipo da taxa de remuneração (linear ou exponencial)
+                      enum:
+                      - LINEAR
+                      - EXPONENCIAL
+                      example: LINEAR
+                    indexer:
+                      type: string
+                      description: Índice utilizado como referência para remuneração da reserva
+                      enum:
+                      - CDI
+                      - DI
+                      - TR
+                      - IPCA
+                      - IGP_M
+                      - IGP_DI
+                      - INPC
+                      - BCP
+                      - TLC
+                      - SELIC
+                      - PRE_FIXADO
+                      - OUTROS
+                      example: CDI
+                    calculation:
+                      type: string
+                      description: Base de cálculo (dias úteis ou dias corridos)
+                      enum:
+                      - DIAS_UTEIS
+                      - DIAS_CORRIDOS
+                      example: DIAS_UTEIS
+                    ratePeriodicity:
+                      type: string
+                      description: Periodicidade da taxa de remuneração (mensal, anual, diário, semestral)
+                      enum:
+                      - MENSAL
+                      - ANUAL
+                      - DIARIO
+                      - SEMESTRAL
+                      example: MENSAL
+                    indexerAdditionalInfo:
+                      type: string
+                      description: 'Informações adicionais do indexador
+
+
+                        [Restrição] Campo de preenchimento obrigatório pelas participantes quando houver
+                        `Outros` no campo `indexer`
+
+                        '
+                      pattern: '[\w\W\s]*'
+                      maxLength: 50
+                      example: Dólar
+    EnumAccountType:
+      type: string
+      enum:
+      - CONTA_DEPOSITO_A_VISTA
+      - CONTA_POUPANCA
+      - CONTA_PAGAMENTO_PRE_PAGA
+      description: 'Tipos de contas. Modalidades tradicionais previstas pela Resolução 4.753, não contemplando
+        contas vinculadas, conta de domiciliados no exterior, contas em moedas estrangeiras e conta correspondente
+        moeda eletrônica. Vide Enum
+
+        Conta de depósito à vista ou Conta corrente - é o tipo mais comum. Nela, o dinheiro fica à sua
+        disposição para ser sacado a qualquer momento. Essa conta não gera rendimentos para o depositante
+
+        Conta poupança - foi criada para estimular as pessoas a pouparem. O dinheiro que ficar na conta
+        por trinta dias passa a gerar rendimentos, com isenção de imposto de renda para quem declara.
+        Ou seja, o dinheiro “cresce” (rende) enquanto ficar guardado na conta. Cada depósito terá rendimentos
+        de mês em mês, sempre no dia do mês em que o dinheiro tiver sido depositado
+
+        Conta de pagamento pré-paga: segundo CIRCULAR Nº 3.680, BCB de  2013, é a ''destinada à execução
+        de transações de pagamento em moeda eletrônica realizadas com base em fundos denominados em reais
+        previamente aportados''
+
+        '
+      example: CONTA_DEPOSITO_A_VISTA
+    Links:
+      type: object
+      description: Referências para outros recusos da API requisitada.
+      required:
+      - self
+      properties:
+        self:
+          type: string
+          format: url
+          maxLength: 4048
+          description: URI completo que gerou a resposta atual.
+          example: https://api.banco.com.br/open-banking/api/v2/resource
+        first:
+          type: string
+          format: url
+          maxLength: 4048
+          description: URI da primeira página que originou essa lista de resultados. Restrição - Obrigatório
+            quando não for a primeira página da resposta
+          example: https://api.banco.com.br/open-banking/api/v2/resource
+        prev:
+          type: string
+          format: url
+          maxLength: 4048
+          description: "URI da página anterior dessa lista de resultados. Restrição - \tObrigatório quando\
+            \ não for a primeira página da resposta"
+          example: https://api.banco.com.br/open-banking/api/v2/resource
+        next:
+          type: string
+          format: url
+          maxLength: 4048
+          description: URI da próxima página dessa lista de resultados. Restrição - Obrigatório quando
+            não for a última página da resposta
+          example: https://api.banco.com.br/open-banking/api/v2/resource
+        last:
+          type: string
+          format: url
+          maxLength: 4048
+          description: URI da última página dessa lista de resultados. Restrição - Obrigatório quando
+            não for a última página da resposta
+          example: https://api.banco.com.br/open-banking/api/v2/resource
+    Meta:
+      type: object
+      description: Meta informações referente à API requisitada.
+      required:
+      - totalRecords
+      - totalPages
+      - requestDateTime
+      properties:
+        totalRecords:
+          type: integer
+          format: int32
+          description: Número total de registros no resultado
+          example: 1
+        totalPages:
+          type: integer
+          format: int32
+          description: Número total de páginas no resultado
+          example: 1
+        requestDateTime:
+          description: Data e hora da consulta, conforme especificação RFC-3339, formato UTC.
+          type: string
+          maxLength: 20
+          format: date-time
+          example: '2021-05-21T08:30:00Z'
+    MetaOnlyRequestDateTime:
+      type: object
+      description: Meta informações referente à API requisitada.
+      required:
+      - requestDateTime
+      properties:
+        requestDateTime:
+          description: Data e hora da consulta, conforme especificação RFC-3339, formato UTC.
+          type: string
+          maxLength: 20
+          format: date-time
+          example: '2021-05-21T08:30:00Z'
+    ResponseAccountList:
+      type: object
+      required:
+      - data
+      - links
+      - meta
+      properties:
+        data:
+          type: array
+          description: Lista de contas depósito à vista, poupança e pagamento pré-pagas mantidas pelo
+            cliente na instituição transmissora e para as quais ele tenha fornecido consentimento
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/AccountData'
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+    ResponseErrorMetaSingle:
+      type: object
+      required:
+      - errors
+      properties:
+        errors:
+          type: array
+          minItems: 1
+          maxItems: 13
+          items:
+            type: object
+            required:
+            - code
+            - title
+            - detail
+            properties:
+              code:
+                description: Código de erro específico do endpoint
+                type: string
+                pattern: '[\w\W\s]*'
+                maxLength: 255
+              title:
+                description: Título legível por humanos deste erro específico
+                type: string
+                pattern: '[\w\W\s]*'
+                maxLength: 255
+              detail:
+                description: Descrição legível por humanos deste erro específico
+                type: string
+                pattern: '[\w\W\s]*'
+                maxLength: 2048
+        meta:
+          $ref: '#/components/schemas/MetaOnlyRequestDateTime'
+    ResponseReservedBalances:
+      type: object
+      required:
+      - data
+      - links
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/AccountReservedBalancesData'
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+    X-V:
+      type: string
+      pattern: ^\d+\.\d+\.\d+$
+      example: 1.0.0
+    XFapiInteractionId:
+      type: string
+      format: uuid
+      maxLength: 36
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: d78fc4e5-37ca-4da3-adf2-9b082bf92280
+      description: Um UUID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação
+        entre request e response. Campo de geração e envio obrigatório pela receptora (client) e o seu
+        valor deve ser “espelhado” pela transmissora (server) no cabeçalho de resposta. Caso não seja
+        recebido ou se for recebido um valor inválido, a transmissora deve gerar um x-fapi-interaction-id
+        e retorná-lo na resposta com o HTTP Status Code 400. A receptora deve acatar o valor recebido
+        da transmissora.
+  responses:
+    BadRequestMetaSingle:
+      description: A requisição foi malformada, omitindo atributos obrigatórios, seja no payload ou através
+        de atributos na URL.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    DefaultMetaSingle:
+      description: Erro inesperado.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    ForbiddenMetaSingle:
+      description: O token tem escopo incorreto ou uma política de segurança foi violada
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    GatewayTimeoutMetaSingle:
+      description: GATEWAY TIMEOUT - A requisição não foi atendida dentro do tempo limite estabelecido
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    InternalServerErrorMetaSingle:
+      description: Ocorreu um erro no gateway da API ou no microsserviço
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    LockedMetaSingle:
+      description: Locked
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    MethodNotAllowedMetaSingle:
+      description: O consumidor tentou acessar o recurso com um método não suportado
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    NotAcceptableMetaSingle:
+      description: A solicitação continha um cabeçalho Accept diferente dos tipos de mídia permitidos
+        ou um conjunto de caracteres diferente de UTF-8
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    NotFoundMetaSingle:
+      description: O recurso solicitado não existe ou não foi implementado
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    OKResponseAccountList:
+      description: Dados de identificação das contas obtidos com sucesso.
+      headers:
+        x-fapi-interaction-id:
+          required: true
+          description: Um UUID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação
+            entre request e response. Campo de geração e envio obrigatório pela receptora (client) e o
+            seu valor deve ser “espelhado” pela transmissora (server) no cabeçalho de resposta. Caso não
+            seja recebido ou se for recebido um valor inválido, a transmissora deve gerar um x-fapi-interaction-id
+            e retorná-lo na resposta com o HTTP Status Code 400. A receptora deve acatar o valor recebido
+            da transmissora.
+          schema:
+            $ref: '#/components/schemas/XFapiInteractionId'
+        x-v:
+          $ref: '#/components/headers/X-V'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseAccountList'
+    OKResponseAccountReservedBalances:
+      description: Dados relativos aos saldos da conta identificada por accountId obtidos com sucesso.
+      headers:
+        x-fapi-interaction-id:
+          required: true
+          description: Um UUID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação
+            entre request e response. Campo de geração e envio obrigatório pela receptora (client) e o
+            seu valor deve ser “espelhado” pela transmissora (server) no cabeçalho de resposta. Caso não
+            seja recebido ou se for recebido um valor inválido, a transmissora deve gerar um x-fapi-interaction-id
+            e retorná-lo na resposta com o HTTP Status Code 400. A receptora deve acatar o valor recebido
+            da transmissora.
+          schema:
+            $ref: '#/components/schemas/XFapiInteractionId'
+        x-v:
+          $ref: '#/components/headers/X-V'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseReservedBalances'
+    SiteIsOverloadedMetaSingle:
+      description: O site está sobrecarregado e a operação foi recusada, pois foi atingido o limite máximo
+        de TPS global, neste momento.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    TooManyRequestsMetaSingle:
+      description: A operação foi recusada, pois muitas solicitações foram feitas dentro de um determinado
+        período ou o limite global de requisições concorrentes foi atingido
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    UnauthorizedMetaSingle:
+      description: Cabeçalho de autenticação ausente/inválido ou token inválido
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
+    UnprocessableEntityMetaSingle:
+      description: A sintaxe da requisição esta correta, mas não foi possível processar as instruções
+        presentes.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/ResponseErrorMetaSingle'
   parameters:
     Authorization:
       name: Authorization
@@ -268,121 +804,12 @@ components:
         maxLength: 36
         pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
         example: d78fc4e5-37ca-4da3-adf2-9b082bf92280
-  responses:
-    BadRequestWithAdditionalProperties:
-      description: A requisição foi malformada, omitindo atributos obrigatórios, seja no payload ou através
-        de atributos na URL.
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    DefaultWithAdditionalProperties:
-      description: Erro inesperado.
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    ForbiddenWithAdditionalProperties:
-      description: O token tem escopo incorreto ou uma política de segurança foi violada
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    GatewayTimeoutWithAdditionalProperties:
-      description: GATEWAY TIMEOUT - A requisição não foi atendida dentro do tempo limite estabelecido
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    InternalServerErrorWithAdditionalProperties:
-      description: Ocorreu um erro no gateway da API ou no microsserviço
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    LockedWithAdditionalProperties:
-      description: Locked
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    MethodNotAllowedWithAdditionalProperties:
-      description: O consumidor tentou acessar o recurso com um método não suportado
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    NotAcceptableWithAdditionalProperties:
-      description: A solicitação continha um cabeçalho Accept diferente dos tipos de mídia permitidos
-        ou um conjunto de caracteres diferente de UTF-8
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    NotFoundWithAdditionalProperties:
-      description: O recurso solicitado não existe ou não foi implementado
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    OKResponseAccountBalances:
-      description: Dados relativos aos saldos da conta identificada por accountId obtidos com sucesso.
-      headers:
-        x-fapi-interaction-id:
-          required: true
-          description: Um UUID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação
-            entre request e response. Campo de geração e envio obrigatório pela receptora (client) e o
-            seu valor deve ser “espelhado” pela transmissora (server) no cabeçalho de resposta. Caso não
-            seja recebido ou se for recebido um valor inválido, a transmissora deve gerar um x-fapi-interaction-id
-            e retorná-lo na resposta com o HTTP Status Code 400. A receptora deve acatar o valor recebido
-            da transmissora.
-          schema:
-            $ref: '#/components/schemas/XFapiInteractionId'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ResponseAccountBalances'
-    OKResponseAccountList:
-      description: Dados de identificação das contas obtidos com sucesso.
-      headers:
-        x-fapi-interaction-id:
-          required: true
-          description: Um UUID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação
-            entre request e response. Campo de geração e envio obrigatório pela receptora (client) e o
-            seu valor deve ser “espelhado” pela transmissora (server) no cabeçalho de resposta. Caso não
-            seja recebido ou se for recebido um valor inválido, a transmissora deve gerar um x-fapi-interaction-id
-            e retorná-lo na resposta com o HTTP Status Code 400. A receptora deve acatar o valor recebido
-            da transmissora.
-          schema:
-            $ref: '#/components/schemas/XFapiInteractionId'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ResponseAccountList'
-    SiteIsOverloadedWithAdditionalProperties:
-      description: O site está sobrecarregado e a operação foi recusada, pois foi atingido o limite máximo
-        de TPS global, neste momento.
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    TooManyRequestsWithAdditionalProperties:
-      description: A operação foi recusada, pois muitas solicitações foram feitas dentro de um determinado
-        período ou o limite global de requisições concorrentes foi atingido
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    UnauthorizedWithAdditionalProperties:
-      description: Cabeçalho de autenticação ausente/inválido ou token inválido
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
-    UnprocessableEntityWithAdditionalProperties:
-      description: A sintaxe da requisição esta correta, mas não foi possível processar as instruções
-        presentes.
-      content:
-        application/json; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/ResponseError'
+  headers:
+    X-V:
+      description: 'Cabeçalho que indica a versão implementada da API pela instituição. Deve ser  preenchido
+        de forma completa, por exemplo: x-v: 1.0.2
+
+        '
+      required: true
+      schema:
+        $ref: '#/components/schemas/X-V'

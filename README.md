@@ -15,7 +15,7 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | `payments-v5-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 5.0.0 da API de Iniciação de Pagamentos (consentimentos + Pix) |
 | `payments-v5-business-rules` | Confluence público OFB (Serviços - SV) | Regras de negócio da API de Pagamentos 5.0.0 (Escopo, Máquina de Estados, Diagrama de Sequência, Validação no DICT, Adaptações 4.0.1→5.0.0) — item por seção |
 | `enrollments-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.3.0 da API de Vínculo de Dispositivo (Enrollments, FIDO, Pix Automático) |
-| `enrollments-v2-business-rules` | Confluence público OFB (Serviços - SV) | Regras de negócio do Vínculo de Dispositivo 2.2.0 (Máquina de estados, Edição do vínculo, FAQ - JSR) — item por seção |
+| `enrollments-v2-business-rules` | Confluence público OFB (Serviços - SV) | Regras de negócio do Vínculo de Dispositivo 2.3.0-rc.1 (Máquina de estados, Edição do vínculo, FAQ - JSR) — item por seção |
 | `automatic-payments-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.2.0 da API de Pagamentos Automáticos (Pix Automático e Transferências Inteligentes) |
 | `automatic-payments-v2-business-rules` | Confluence público OFB (Serviços - SV) | Regras de negócio de Pagamentos Automáticos 2.2.0 (Máquina de Estados, Edição do consentimento, Tentativas Intradia/Extradia, Adaptações 1.0.0→2.2.0) — item por seção |
 | `payments-common-rules` | Confluence público OFB (Serviços - SV) | Conteúdo comum aos produtos de Iniciação de Pagamentos (atores, Idempotência, Como Assinar o Payload, Convenções de data/fuso, Polling) — item por seção |

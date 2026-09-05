@@ -169,3 +169,12 @@ npm test           # vitest (fixtures locais, sem rede)
 npm run typecheck  # tsc --noEmit
 npm run build      # tsup → dist/
 ```
+
+### Skills para manutenção dos domínios
+
+As skills do projeto ficam em `.agents/skills`:
+
+- [auditar-dominios](.agents/skills/auditar-dominios/SKILL.md) — compara os domínios com as fontes oficiais e lista versões, páginas ou cobertura que precisam de atualização, com evidências e sem editar o projeto.
+- [atualizar-dominios](.agents/skills/atualizar-dominios/SKILL.md) — aplica as atualizações solicitadas e verifica extração, fixtures, testes, tipos e build.
+
+Exemplos de pedidos: “Use $auditar-dominios para listar os domínios desatualizados” e “Use $atualizar-dominios para atualizar Automatic Payments dentro do major atual”.

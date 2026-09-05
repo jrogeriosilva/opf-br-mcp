@@ -307,8 +307,10 @@ export function createServer(refreshBudgetMs: number = REFRESH_BUDGET_MS): McpSe
           continue;
         }
         try {
-          const { data } = await getDomainData(d, true, extractContext(extra));
-          report[d.id] = `ok: ${data.items.length} itens`;
+          const { data, stale, extractedAt } = await getDomainData(d, true, extractContext(extra));
+          report[d.id] = stale
+            ? `erro: atualização falhou; cache anterior preservado (extraído em ${extractedAt})`
+            : `ok: ${data.items.length} itens`;
         } catch (err) {
           report[d.id] = `erro: ${(err as Error).message}`;
         }

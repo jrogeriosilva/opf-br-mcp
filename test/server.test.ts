@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { writeCache } from "../src/core/cache.js";
+import { readCache, writeCache } from "../src/core/cache.js";
 import { domains } from "../src/core/registry.js";
 import { PACKAGE_VERSION } from "../src/core/version.js";
 import { createServer } from "../src/core/server.js";
@@ -323,6 +323,23 @@ describe("opf-br-mcp server", () => {
     expect(Object.keys(parsed.atualizados)).toEqual(["mqd"]);
     expect(parsed.atualizados.mqd).toMatch(/^erro:/);
     expect(parsed.pendentes).toBeUndefined();
+  });
+
+  it("refresh com falha informa que preservou o cache anterior e sua data", async () => {
+    const cached = writeCache("mqd", { items: [{ id: "anterior" }] }, PACKAGE_VERSION);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: false, status: 404, statusText: "Not Found" }))
+    );
+    const client = await connectedClient();
+    const parsed = JSON.parse(
+      firstText(await client.callTool({ name: "refresh", arguments: { domain: "mqd" } }))
+    );
+
+    expect(parsed.atualizados.mqd).toBe(
+      `erro: atualização falhou; cache anterior preservado (extraído em ${cached.extractedAt})`
+    );
+    expect(readCache("mqd")).toEqual(cached);
   });
 
   it("refresh no portal explica que domínio live não tem cache", async () => {

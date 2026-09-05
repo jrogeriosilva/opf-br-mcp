@@ -10,7 +10,7 @@ acesso token-eficiente às regras do Open Finance Brasil.
 
 | Domínio | Fonte | Conteúdo |
 |---|---|---|
-| `pcm-additional-info` | Confluence público OFB | Regras de obrigatoriedade do `additionalInfo` (PCM) |
+| `pcm-additional-info` | Confluence público OFB | Regras de obrigatoriedade do `additionalInfo` (PCM), incluindo Dados Abertos |
 | `payments-v5-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 5.0.0 da API de Iniciação de Pagamentos (consentimentos + Pix) |
 | `payments-v5-business-rules` | Confluence público OFB (Serviços - SV) | Regras de negócio da API de Pagamentos 5.0.0 (Escopo, Máquina de Estados, Diagrama de Sequência, Validação no DICT, Adaptações 4.0.1→5.0.0) — item por seção |
 | `enrollments-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.3.0 da API de Vínculo de Dispositivo (Enrollments, FIDO, Pix Automático) |

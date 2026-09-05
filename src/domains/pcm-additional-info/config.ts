@@ -6,6 +6,7 @@ export const pcmConfig = {
     { pageId: "1621622796", title: "Iniciação de Pagamentos" },
     { pageId: "1623162886", title: "Iniciação de Pagamentos Sem Redirecionamento" },
     { pageId: "1622081540", title: "Pagamentos Automáticos" },
+    { pageId: "1212088335", title: "Regras de Obrigatoriedade (additionalInfo) - DA" },
     { pageId: "1212153857", title: "Regras de Obrigatoriedade additionalInfo - SG" },
     { pageId: "1621786627", title: "DC - Câmbio" },
     { pageId: "1622736899", title: "DC - Cartão de Crédito" },

@@ -78,7 +78,7 @@ export const pcmDomain: ExtractedDomain = {
   title: "PCM — Regras de obrigatoriedade do additionalInfo",
   description:
     "Tabelas de obrigatoriedade e preenchimento do campo additionalInfo no Open Finance Brasil, extraídas do Confluence, por família: " +
-    "Iniciação de Pagamentos (v4/v5), Sem Redirecionamento, Pagamentos Automáticos, Segurança (SG) e Dados/Consentimento (DC-*, v3). " +
+    "Iniciação de Pagamentos (v4/v5), Sem Redirecionamento, Pagamentos Automáticos, Dados Abertos (DA), Segurança (SG) e Dados/Consentimento (DC-*, v3). " +
     "Cada item é um campo com regra de preenchimento, roles (CLIENT/SERVER), métodos, endpoints, versões, tamanho máximo e exemplo. " +
     "Uma das facetas da PCM (Plataforma de Coleta de Métricas): para o swagger dos endpoints de reporte veja pcm-openapi; " +
     "para as regras de negócio (reporte, processamento, divergências) veja pcm-business-rules. " +

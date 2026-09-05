@@ -1,6 +1,6 @@
 {
   "name": "opf-br-mcp",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "MCP server local com as regras do Open Finance Brasil (PCM additionalInfo, specs OpenAPI de Pagamentos)",
   "type": "module",
   "license": "MIT",

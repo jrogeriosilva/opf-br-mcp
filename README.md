@@ -27,7 +27,7 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | `pcm-openapi` | GitHub OpenBanking-Brasil/pcm-specs | Spec OpenAPI da PCM (reportes, hybrid-flow, opendata, consents/stock, credit-portabilities, payments/status) |
 | `pcm-business-rules` | Confluence público OFB | Regras de negócio da PCM (Reporte, Processamento, Divergências, Especificação Técnica, Manual de Integração) — item por seção |
 | `jornada-otimizada` | Confluence público OFB | Regras da Jornada Otimizada (Orientações Gerais, Transferências Inteligentes, Jornada sem Redirecionamento) — item por seção |
-| `mqd` | Confluence público OFB | Motor de Qualidade de Dados (Especificação Técnica, Arquitetura, Documentação da API, Manual de Instalação, Endpoints Validados, FAQ, Troubleshooting) — item por seção |
+| `mqd` | Confluence público OFB | Motor de Qualidade de Dados (especificação técnica, arquitetura e fluxos, documentação da API, instalação, endpoints validados, FAQ e troubleshooting) — item por seção |
 | `webhook-v1-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 1.3.0 da API de Webhook (notificações de mudança de estado: pagamentos, enrollments, pagamentos automáticos) |
 | `seguranca` | Confluence público OFB | Segurança do Open Finance Brasil (guias do usuário, Perfil de Segurança, FAPI-BR 2.2.1, DCR-BR 2.1.0, referências de CIBA, Padrão de Certificados 2.1, Assinaturas, Casos de Erro, Redirecionamento App-to-App, Glossário, Versionamento) — item por seção |
 | `requisitos-nao-funcionais` | Confluence público OFB (Manual de APIs) | Requisitos não funcionais de todas as APIs (Desempenho, Disponibilidade, Timeout, Limites de tráfego, Limites operacionais, Indisponibilidade Programada) — item por seção |

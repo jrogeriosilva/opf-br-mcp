@@ -1,17 +1,18 @@
-# CLAUDE.md
+# AGENTS.md
 
 Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 Tradeoff: These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
 # 0. What this is
 
-Local stdio MCP server (`opf-br-mcp`) that gives coding agents token-efficient access to Open Finance Brasil regulatory knowledge (PCM `additionalInfo` rules from Confluence, Payments OpenAPI spec from GitHub). ESM, Node >= 20, TypeScript strict. User-facing strings (tool/domain descriptions, server instructions), docs (README) and commit messages are in Brazilian Portuguese; this file is the exception and stays in English.
+Local stdio MCP server (`opf-br-mcp`) that gives coding agents token-efficient access to Open Finance Brasil regulatory knowledge (PCM `additionalInfo` rules from Confluence, Payments OpenAPI spec from GitHub). ESM, Node &gt;= 20, TypeScript strict. User-facing strings (tool/domain descriptions, server instructions), docs (README) and commit messages are in Brazilian Portuguese; this file is the exception and stays in English.
 
 ## 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
 
 Before implementing:
+
 - State your assumptions explicitly. If uncertain, ask.
 - If multiple interpretations exist, present them - don't pick silently.
 - If a simpler approach exists, say so. Push back when warranted.
@@ -27,34 +28,36 @@ Before implementing:
 - No error handling for impossible scenarios.
 - If you write 200 lines and it could be 50, rewrite it.
 
-
 ## 3. Surgical Changes
 
 **Touch only what you must. Clean up only your own mess.**
 
 When editing existing code:
+
 - Don't "improve" adjacent code, comments, or formatting.
 - Don't refactor things that aren't broken.
 - Match existing style, even if you'd do it differently.
 - If you notice unrelated dead code, mention it - don't delete it.
 
 When your changes create orphans:
+
 - Remove imports/variables/functions that YOUR changes made unused.
 - Don't remove pre-existing dead code unless asked.
 
 The test: Every changed line should trace directly to the user's request.
-
 
 ## 4. Goal-Driven Execution
 
 **Define success criteria. Loop until verified.**
 
 Transform tasks into verifiable goals:
+
 - "Add validation" → "Write tests for invalid inputs, then make them pass"
 - "Fix the bug" → "Write a test that reproduces it, then make it pass"
 - "Refactor X" → "Ensure tests pass before and after"
 
 For multi-step tasks, state a brief plan:
+
 ```
 1. [Step] → verify: [check]
 2. [Step] → verify: [check]
@@ -114,3 +117,4 @@ Two layers: a **domain-agnostic core** and pluggable **domains**. The server exp
 - Confluence page lists in `config.ts` exclude index pages (link-only), `Informações Técnicas` (just a swagger download link), archived `Histórico de Especificações` subtrees, and `Changelog` pages (100k+ chars of diff tables that would swamp the cache and search).
 - When auditing whether a Confluence-backed domain is current, inspect the API's published production tree under `spaces/OF` and enumerate the pages of the newest version, including release candidates. Do not infer that the domain is current from the paired GitHub OpenAPI version, the configured page titles, or incomplete search results. Before reporting "up to date", compare the configured page ids and `specVersion` against that production tree; treat `spaces/DraftOF` only as supporting evidence, never as the canonical published source.
 - Commits follow conventional-commit prefixes (`feat:`, `fix:`, `test:`, `docs:`) with messages in Brazilian Portuguese.
+

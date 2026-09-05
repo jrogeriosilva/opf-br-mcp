@@ -200,14 +200,14 @@ describe("opf-br-mcp server", () => {
 
   it("get_item devolve o item completo do cache", async () => {
     writeCache(
-      "payments-v4-openapi",
+      "payments-v5-openapi",
       { items: [{ id: "payments:schema:X", type: "schema", name: "X", detail: { a: 1 } }] },
       PACKAGE_VERSION
     );
     const client = await connectedClient();
     const result = await client.callTool({
       name: "get_item",
-      arguments: { domain: "payments-v4-openapi", id: "payments:schema:X" },
+      arguments: { domain: "payments-v5-openapi", id: "payments:schema:X" },
     });
     const parsed = JSON.parse(firstText(result));
     expect(parsed.detail).toEqual({ a: 1 });
@@ -215,7 +215,7 @@ describe("opf-br-mcp server", () => {
 
   it("offset pagina os resultados do search", async () => {
     writeCache(
-      "payments-v4-openapi",
+      "payments-v5-openapi",
       {
         items: [
           { id: "payments:GET /a", type: "operation", path: "/a" },
@@ -228,7 +228,7 @@ describe("opf-br-mcp server", () => {
     const client = await connectedClient();
     const result = await client.callTool({
       name: "search",
-      arguments: { domain: "payments-v4-openapi", limit: 2, offset: 2 },
+      arguments: { domain: "payments-v5-openapi", limit: 2, offset: 2 },
     });
     const parsed = JSON.parse(firstText(result));
     expect(parsed.matches).toBe(3);
@@ -238,14 +238,14 @@ describe("opf-br-mcp server", () => {
 
   it("search sem resultados inclui hint apontando o domínio portal", async () => {
     writeCache(
-      "payments-v4-openapi",
+      "payments-v5-openapi",
       { items: [{ id: "payments:GET /a", type: "operation", path: "/a" }] },
       PACKAGE_VERSION
     );
     const client = await connectedClient();
     const result = await client.callTool({
       name: "search",
-      arguments: { domain: "payments-v4-openapi", query: "zzz-sem-resultado" },
+      arguments: { domain: "payments-v5-openapi", query: "zzz-sem-resultado" },
     });
     const parsed = JSON.parse(firstText(result));
     expect(parsed.matches).toBe(0);

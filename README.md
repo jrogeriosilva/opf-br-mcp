@@ -10,8 +10,7 @@ acesso token-eficiente às regras do Open Finance Brasil.
 
 | Domínio | Fonte | Conteúdo |
 |---|---|---|
-| `pcm-additional-info` | Confluence público OFB | Regras de obrigatoriedade do `additionalInfo` (PCM) |
-| `payments-v4-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 4.1.0 da API de Pagamentos |
+| `pcm-additional-info` | Confluence público OFB | Regras de obrigatoriedade do `additionalInfo` (PCM), incluindo Dados Abertos |
 | `payments-v5-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 5.0.0 da API de Iniciação de Pagamentos (consentimentos + Pix) |
 | `payments-v5-business-rules` | Confluence público OFB (Serviços - SV) | Regras de negócio da API de Pagamentos 5.0.0 (Escopo, Máquina de Estados, Diagrama de Sequência, Validação no DICT, Adaptações 4.0.1→5.0.0) — item por seção |
 | `enrollments-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.3.0 da API de Vínculo de Dispositivo (Enrollments, FIDO, Pix Automático) |
@@ -22,15 +21,15 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | `payments-implementation-guides` | Confluence público OFB (Serviços - SV) | Guias de Implementação (Pix Automático, Agendamento Recorrente, Transferências Inteligentes, Liquidação de QR Codes) — item por seção |
 | `consents-v3-openapi` | GitHub Pages openbanking-brasil.github.io | Spec OpenAPI 3.3.1 da API de Consentimentos (Dados Cadastrais e Transacionais) |
 | `resources-v3-openapi` | GitHub Pages openbanking-brasil.github.io | Spec OpenAPI 3.1.0 da API de Recursos (`GET /resources`: status dos recursos compartilhados) |
-| `resources-v3-business-rules` | Confluence público OFB (Dados - DC) | Regras de negócio da API de Recursos 3.1.0 (Informações Gerais, Orientações) — item por seção |
+| `resources-v3-business-rules` | Confluence público OFB (Dados - DC) | Regras de negócio da API de Recursos 3.1.0 (Informações Gerais, Orientações, Campos regulatórios) — item por seção |
 | `accounts-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.5.1 da API de Contas (listagem, saldos, saldos reservados/caixinhas, transações, limites de cheque especial) |
 | `accounts-v2-business-rules` | Confluence público OFB (Dados - DC) | Regras de negócio da API de Contas 2.5.0 (PRD, Orientações — contraparte/IN BCB nº 371) — item por seção |
 | `pcm-openapi` | GitHub OpenBanking-Brasil/pcm-specs | Spec OpenAPI da PCM (reportes, hybrid-flow, opendata, consents/stock, credit-portabilities, payments/status) |
-| `pcm-business-rules` | Confluence público OFB | Regras de negócio da PCM (Reporte, Processamento, Divergências, Especificação Técnica, Manual de Integração) — item por seção |
+| `pcm-business-rules` | Confluence público OFB | Regras de negócio e gestão operacional da PCM (reporte, processamento, divergências, `dropReason`, descartes, não pareamento, qualidade e SLAs) — item por seção |
 | `jornada-otimizada` | Confluence público OFB | Regras da Jornada Otimizada (Orientações Gerais, Transferências Inteligentes, Jornada sem Redirecionamento) — item por seção |
-| `mqd` | Confluence público OFB | Motor de Qualidade de Dados (Especificação Técnica, Arquitetura, Documentação da API, Manual de Instalação, Endpoints Validados, FAQ, Troubleshooting) — item por seção |
+| `mqd` | Confluence público OFB | Motor de Qualidade de Dados (especificação técnica, arquitetura e fluxos, documentação da API, instalação, endpoints validados, FAQ e troubleshooting) — item por seção |
 | `webhook-v1-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 1.3.0 da API de Webhook (notificações de mudança de estado: pagamentos, enrollments, pagamentos automáticos) |
-| `seguranca` | Confluence público OFB | Segurança do Open Finance Brasil (Perfil de Segurança, FAPI, DCR, CIBA, Padrão de Certificados, Assinaturas, Casos de Erro, Redirecionamento App-to-App, Glossário, Versionamento) — item por seção |
+| `seguranca` | Confluence público OFB | Segurança do Open Finance Brasil (guias do usuário, Perfil de Segurança, FAPI-BR 2.2.1, DCR-BR 2.1.0, referências de CIBA, Padrão de Certificados 2.1, Assinaturas, Casos de Erro, Redirecionamento App-to-App, Glossário, Versionamento) — item por seção |
 | `requisitos-nao-funcionais` | Confluence público OFB (Manual de APIs) | Requisitos não funcionais de todas as APIs (Desempenho, Disponibilidade, Timeout, Limites de tráfego, Limites operacionais, Indisponibilidade Programada) — item por seção |
 | `limites-por-endpoint` | Confluence público OFB (Manual de APIs) | SLA (p95), timeout, TPM, TPS e limite operacional de cada endpoint de todas as famílias de API — um item por endpoint |
 | `participantes` | Diretório OFB (data.directory.openbankingbrasil.org.br) | Organizações participantes, marcas (authorisation servers) e famílias de API suportadas com versões — um item por organização |
@@ -72,7 +71,7 @@ bem na janela de contexto de um agente, e despejá-la desperdiça tokens. A solu
 apenas o mínimo necessário em cada etapa do funil:
 
 1. **`list_domains`** — catálogo barato: quais domínios e filtros existem. Os
-   filtros idênticos a uma família inteira de domínios (os 9 `*-openapi`, os 12
+   filtros idênticos a uma família inteira de domínios (os 8 `*-openapi`, os 12
    de seções do Confluence) saem uma única vez em `filterSets`; cada domínio
    traz `filterSet` e só lista inline o que é próprio dele (em `*-openapi`,
    apenas `path`, cujo exemplo varia por API). Os filtros aceitos por um domínio
@@ -86,8 +85,8 @@ apenas o mínimo necessário em cada etapa do funil:
 
 Como o Swagger/OpenAPI vira dados pesquisáveis: o parser "achata" a spec em itens
 com `id` estável — um por endpoint (`type: operation`, ex.
-`payments-v4:POST /pix/payments`) e um por component reutilizável: `type: schema`
-(`payments-v4:schema:PixPayment`), `type: response` (`webhook:response:202Webhook`),
+`payments:POST /pix/payments`) e um por component reutilizável: `type: schema`
+(`payments:schema:PixPayment`), `type: response` (`webhook:response:202Webhook`),
 `type: parameter` (`webhook:parameter:xWebhookInteractionId`) e `type: header`
 (`payments:header:X-V`). O JSON completo de
 cada nó fica retido em `detail` até um `get_item` explícito. Os `id`s não são
@@ -169,3 +168,12 @@ npm test           # vitest (fixtures locais, sem rede)
 npm run typecheck  # tsc --noEmit
 npm run build      # tsup → dist/
 ```
+
+### Skills para manutenção dos domínios
+
+As skills do projeto ficam em `.agents/skills`:
+
+- [auditar-dominios](.agents/skills/auditar-dominios/SKILL.md) — compara os domínios com as fontes oficiais e lista versões, páginas ou cobertura que precisam de atualização, com evidências e sem editar o projeto.
+- [atualizar-dominios](.agents/skills/atualizar-dominios/SKILL.md) — aplica as atualizações solicitadas e verifica extração, fixtures, testes, tipos e build.
+
+Exemplos de pedidos: “Use $auditar-dominios para listar os domínios desatualizados” e “Use $atualizar-dominios para atualizar Automatic Payments dentro do major atual”.

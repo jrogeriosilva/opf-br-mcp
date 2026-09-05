@@ -5,6 +5,7 @@ import { buildItems, definicaoSnippet, pcmDomain } from "./index.js";
 import { parseAdditionalInfoTables } from "./parser.js";
 
 const html = readFileSync(new URL("../../../test/fixtures/pcm-page.html", import.meta.url), "utf8");
+const daHtml = readFileSync(new URL("../../../test/fixtures/pcm-da-page.html", import.meta.url), "utf8");
 
 function fixtureData(): DomainData {
   const fields = parseAdditionalInfoTables(html);
@@ -55,6 +56,47 @@ describe("pcmDomain", () => {
     const [first] = pcmDomain.search(data, undefined, { field: "proxy" });
     expect(pcmDomain.getItem(data, first.id)?.campo).toBe("proxy");
     expect(pcmDomain.getItem(data, "nao-existe")).toBeNull();
+  });
+
+  it("preserva linhas repetidas de clientIp de Dados Abertos como itens distintos", () => {
+    const data: DomainData = {
+      items: buildItems([
+        {
+          pageId: "1212088335",
+          title: "Regras de Obrigatoriedade (additionalInfo) - DA",
+          url: "https://example.test/pcm-da",
+          fields: parseAdditionalInfoTables(daHtml),
+        },
+      ]),
+    };
+
+    const results = pcmDomain.search(data, undefined, { field: "clientIp" });
+    expect(results.map((item) => item.id)).toEqual([
+      "1212088335:clientip",
+      "1212088335:clientip-2",
+    ]);
+
+    const items = results.map((result) => pcmDomain.getItem(data, result.id));
+    expect(items).toMatchObject([
+      {
+        grupo: "Adiantamento a Depositantes",
+        tipo: "string",
+        endpoints: [
+          "/open-banking/opendata-unarranged/vx/personal-unarranged-account-overdraft",
+          "/open-banking/opendata-unarranged/vx/business-unarranged-account-overdraft",
+        ],
+        versoes: ["v1"],
+      },
+      {
+        grupo: "Canais de Atendimento",
+        tipo: "string",
+        endpoints: [
+          "/open-banking/channels/vx/branches",
+          "/open-banking/channels/vx/electronic-channels",
+        ],
+        versoes: ["v2"],
+      },
+    ]);
   });
 });
 

@@ -4,8 +4,7 @@ export const paymentsV5Config: OpenApiDomainConfig = {
   id: "payments-v5-openapi",
   title: "API de Pagamentos — spec OpenAPI 5.0.0",
   description:
-    "Spec OpenAPI oficial da API de Iniciação de Pagamentos (Pix) do Open Finance Brasil, versão 5 (major mais recente). " +
-    "Mesma família da payments-v4-openapi; escolha o domínio pela versão que seu caso usa. " +
+    "Spec OpenAPI oficial da API de Iniciação de Pagamentos (Pix) do Open Finance Brasil, versão 5. " +
     "Itens type=operation (endpoints, um por método+path), type=schema (payloads) e os components " +
     "reutilizáveis alvos dos $ref: type=response, type=parameter e type=header. " +
     "search devolve resumos; use get_item para o nó completo da spec — nas operações o campo " +

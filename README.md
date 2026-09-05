@@ -11,7 +11,6 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | Domínio | Fonte | Conteúdo |
 |---|---|---|
 | `pcm-additional-info` | Confluence público OFB | Regras de obrigatoriedade do `additionalInfo` (PCM) |
-| `payments-v4-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 4.1.0 da API de Pagamentos |
 | `payments-v5-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 5.0.0 da API de Iniciação de Pagamentos (consentimentos + Pix) |
 | `payments-v5-business-rules` | Confluence público OFB (Serviços - SV) | Regras de negócio da API de Pagamentos 5.0.0 (Escopo, Máquina de Estados, Diagrama de Sequência, Validação no DICT, Adaptações 4.0.1→5.0.0) — item por seção |
 | `enrollments-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.3.0 da API de Vínculo de Dispositivo (Enrollments, FIDO, Pix Automático) |
@@ -72,7 +71,7 @@ bem na janela de contexto de um agente, e despejá-la desperdiça tokens. A solu
 apenas o mínimo necessário em cada etapa do funil:
 
 1. **`list_domains`** — catálogo barato: quais domínios e filtros existem. Os
-   filtros idênticos a uma família inteira de domínios (os 9 `*-openapi`, os 12
+   filtros idênticos a uma família inteira de domínios (os 8 `*-openapi`, os 12
    de seções do Confluence) saem uma única vez em `filterSets`; cada domínio
    traz `filterSet` e só lista inline o que é próprio dele (em `*-openapi`,
    apenas `path`, cujo exemplo varia por API). Os filtros aceitos por um domínio
@@ -86,8 +85,8 @@ apenas o mínimo necessário em cada etapa do funil:
 
 Como o Swagger/OpenAPI vira dados pesquisáveis: o parser "achata" a spec em itens
 com `id` estável — um por endpoint (`type: operation`, ex.
-`payments-v4:POST /pix/payments`) e um por component reutilizável: `type: schema`
-(`payments-v4:schema:PixPayment`), `type: response` (`webhook:response:202Webhook`),
+`payments:POST /pix/payments`) e um por component reutilizável: `type: schema`
+(`payments:schema:PixPayment`), `type: response` (`webhook:response:202Webhook`),
 `type: parameter` (`webhook:parameter:xWebhookInteractionId`) e `type: header`
 (`payments:header:X-V`). O JSON completo de
 cada nó fica retido em `detail` até um `get_item` explícito. Os `id`s não são

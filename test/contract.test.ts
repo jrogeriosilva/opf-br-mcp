@@ -13,7 +13,6 @@ import { parseEndpointLimits } from "../src/domains/limites-por-endpoint/parser.
 import { buildItems as buildLimitItems } from "../src/domains/limites-por-endpoint/index.js";
 
 const pcmHtml = readFileSync(new URL("./fixtures/pcm-page.html", import.meta.url), "utf8");
-const paymentsYaml = readFileSync(new URL("./fixtures/payments-spec.yml", import.meta.url), "utf8");
 const paymentsV5Yaml = readFileSync(new URL("./fixtures/payments-v5-spec.yml", import.meta.url), "utf8");
 const enrollmentsV2Yaml = readFileSync(new URL("./fixtures/enrollments-v2-spec.yml", import.meta.url), "utf8");
 const automaticPaymentsV2Yaml = readFileSync(
@@ -80,7 +79,6 @@ const fixtureData: Record<string, () => DomainData> = {
       { pageId: "1", title: "Página Fixture", url: "u", fields: parseAdditionalInfoTables(pcmHtml) },
     ]),
   }),
-  "payments-v4-openapi": () => ({ items: parseOpenApiSpec(paymentsYaml, "payments") }),
   "payments-v5-openapi": () => ({ items: parseOpenApiSpec(paymentsV5Yaml, "payments") }),
   "enrollments-v2-openapi": () => ({ items: parseOpenApiSpec(enrollmentsV2Yaml, "enrollments") }),
   "automatic-payments-v2-openapi": () => ({

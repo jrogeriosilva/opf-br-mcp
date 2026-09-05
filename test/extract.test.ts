@@ -1,11 +1,11 @@
 import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { paymentsDomain } from "../src/domains/payments-v4-openapi/index.js";
+import { paymentsV5Domain } from "../src/domains/payments-v5-openapi/index.js";
 import { pcmConfig } from "../src/domains/pcm-additional-info/config.js";
 import { pcmDomain } from "../src/domains/pcm-additional-info/index.js";
 
 const pcmHtml = readFileSync(new URL("./fixtures/pcm-page.html", import.meta.url), "utf8");
-const paymentsYaml = readFileSync(new URL("./fixtures/payments-spec.yml", import.meta.url), "utf8");
+const paymentsV5Yaml = readFileSync(new URL("./fixtures/payments-v5-spec.yml", import.meta.url), "utf8");
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -49,7 +49,7 @@ describe("cancelamento e progresso na extração", () => {
   it("payments: signal já abortado interrompe antes do fetch", async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
-    await expect(paymentsDomain.extract({ signal: abortedSignal() })).rejects.toThrow(/cancelad/i);
+    await expect(paymentsV5Domain.extract({ signal: abortedSignal() })).rejects.toThrow(/cancelad/i);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -60,11 +60,11 @@ describe("cancelamento e progresso na extração", () => {
         ok: true,
         status: 200,
         statusText: "OK",
-        text: async () => paymentsYaml,
+        text: async () => paymentsV5Yaml,
       })
     );
     const onProgress = vi.fn();
-    await paymentsDomain.extract({ onProgress });
+    await paymentsV5Domain.extract({ onProgress });
     expect(onProgress).toHaveBeenCalledWith(0, 1, expect.any(String));
     expect(onProgress).toHaveBeenCalledWith(1, 1);
   });

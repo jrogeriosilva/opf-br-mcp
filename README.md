@@ -21,11 +21,11 @@ acesso token-eficiente às regras do Open Finance Brasil.
 | `payments-implementation-guides` | Confluence público OFB (Serviços - SV) | Guias de Implementação (Pix Automático, Agendamento Recorrente, Transferências Inteligentes, Liquidação de QR Codes) — item por seção |
 | `consents-v3-openapi` | GitHub Pages openbanking-brasil.github.io | Spec OpenAPI 3.3.1 da API de Consentimentos (Dados Cadastrais e Transacionais) |
 | `resources-v3-openapi` | GitHub Pages openbanking-brasil.github.io | Spec OpenAPI 3.1.0 da API de Recursos (`GET /resources`: status dos recursos compartilhados) |
-| `resources-v3-business-rules` | Confluence público OFB (Dados - DC) | Regras de negócio da API de Recursos 3.1.0 (Informações Gerais, Orientações) — item por seção |
+| `resources-v3-business-rules` | Confluence público OFB (Dados - DC) | Regras de negócio da API de Recursos 3.1.0 (Informações Gerais, Orientações, Campos regulatórios) — item por seção |
 | `accounts-v2-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 2.5.1 da API de Contas (listagem, saldos, saldos reservados/caixinhas, transações, limites de cheque especial) |
 | `accounts-v2-business-rules` | Confluence público OFB (Dados - DC) | Regras de negócio da API de Contas 2.5.0 (PRD, Orientações — contraparte/IN BCB nº 371) — item por seção |
 | `pcm-openapi` | GitHub OpenBanking-Brasil/pcm-specs | Spec OpenAPI da PCM (reportes, hybrid-flow, opendata, consents/stock, credit-portabilities, payments/status) |
-| `pcm-business-rules` | Confluence público OFB | Regras de negócio da PCM (Reporte, Processamento, Divergências, Especificação Técnica, Manual de Integração) — item por seção |
+| `pcm-business-rules` | Confluence público OFB | Regras de negócio e gestão operacional da PCM (reporte, processamento, divergências, `dropReason`, descartes, não pareamento, qualidade e SLAs) — item por seção |
 | `jornada-otimizada` | Confluence público OFB | Regras da Jornada Otimizada (Orientações Gerais, Transferências Inteligentes, Jornada sem Redirecionamento) — item por seção |
 | `mqd` | Confluence público OFB | Motor de Qualidade de Dados (especificação técnica, arquitetura e fluxos, documentação da API, instalação, endpoints validados, FAQ e troubleshooting) — item por seção |
 | `webhook-v1-openapi` | GitHub OpenBanking-Brasil/all-services-repo | Spec OpenAPI 1.3.0 da API de Webhook (notificações de mudança de estado: pagamentos, enrollments, pagamentos automáticos) |

@@ -169,10 +169,11 @@ npm run typecheck  # tsc --noEmit
 npm run build      # tsup → dist/
 ```
 
-### Skills para manutenção dos domínios
+### Skills para consulta e manutenção dos domínios
 
 As skills do projeto ficam em `.agents/skills`:
 
+- [consultar-opf-br](.agents/skills/consultar-opf-br/SKILL.md) — orienta coding agents a selecionar domínio e versão, buscar resumos, resolver referências e aplicar evidências ao código. Para usar em outro projeto, copie a pasta para o diretório de skills reconhecido pelo seu agente e configure o MCP `opf-br-mcp`. Exemplo: “Use $consultar-opf-br para revisar a iniciação de pagamentos Pix v5”.
 - [auditar-dominios](.agents/skills/auditar-dominios/SKILL.md) — compara os domínios com as fontes oficiais e lista versões, páginas ou cobertura que precisam de atualização, com evidências e sem editar o projeto.
 - [atualizar-dominios](.agents/skills/atualizar-dominios/SKILL.md) — aplica as atualizações solicitadas e verifica extração, fixtures, testes, tipos e build.
 

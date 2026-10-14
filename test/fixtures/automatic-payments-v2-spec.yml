@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: API Automatic Payments - Open Finance Brasil
-  version: 2.2.0
+  version: 2.2.1
 paths:
   /recurring-consents:
     post:
@@ -60,3 +60,61 @@ components:
       properties:
         data:
           type: object
+    EnumRejectionReasonCodeGet:
+      type: string
+      enum:
+        - SALDO_INSUFICIENTE
+        - VALOR_ACIMA_LIMITE
+        - VALOR_INVALIDO
+        - NAO_INFORMADO
+        - PAGAMENTO_DIVERGENTE_CONSENTIMENTO
+        - PAGAMENTO_RECUSADO_DETENTORA
+        - PAGAMENTO_RECUSADO_SPI
+        - CONSENTIMENTO_INVALIDO
+        - FALHA_INFRAESTRUTURA_SPI
+        - FALHA_INFRAESTRUTURA_ICP
+        - FALHA_INFRAESTRUTURA_PSP_RECEBEDOR
+        - FALHA_INFRAESTRUTURA_DETENTORA
+        - LIMITE_PERIODO_VALOR_EXCEDIDO
+        - LIMITE_PERIODO_QUANTIDADE_EXCEDIDO
+        - TITULARIDADE_INCONSISTENTE
+        - LIMITE_VALOR_TOTAL_CONSENTIMENTO_EXCEDIDO
+        - LIMITE_VALOR_TRANSACAO_CONSENTIMENTO_EXCEDIDO
+        - LIMITE_TENTATIVAS_EXCEDIDO
+        - FORA_PRAZO_PERMITIDO
+        - DETALHE_TENTATIVA_INVALIDO
+        - DETALHE_PAGAMENTO_INVALIDO
+      example: SALDO_INSUFICIENTE
+      description: |
+        Código identificador do motivo de rejeição.
+        Motivo da rejeição do pagamento. Informações complementares sobre o motivo do status.
+        [Restrição] Esse motivo deverá ser enviado quando o campo `/data/status` for igual a RJCT (REJECTED).
+    EnumRejectionReasonCode:
+      type: string
+      enum:
+        - SALDO_INSUFICIENTE
+        - VALOR_ACIMA_LIMITE
+        - VALOR_INVALIDO
+        - NAO_INFORMADO
+        - PAGAMENTO_DIVERGENTE_CONSENTIMENTO
+        - PAGAMENTO_RECUSADO_DETENTORA
+        - PAGAMENTO_RECUSADO_SPI
+        - FALHA_INFRAESTRUTURA_SPI
+        - FALHA_INFRAESTRUTURA_ICP
+        - FALHA_INFRAESTRUTURA_PSP_RECEBEDOR
+        - FALHA_INFRAESTRUTURA_DETENTORA
+        - CONSENTIMENTO_INVALIDO
+        - TITULARIDADE_INCONSISTENTE
+        - LIMITE_PERIODO_VALOR_EXCEDIDO
+        - LIMITE_PERIODO_QUANTIDADE_EXCEDIDO
+        - LIMITE_VALOR_TOTAL_CONSENTIMENTO_EXCEDIDO
+        - LIMITE_VALOR_TRANSACAO_CONSENTIMENTO_EXCEDIDO
+        - LIMITE_TENTATIVAS_EXCEDIDO
+        - FORA_PRAZO_PERMITIDO
+        - DETALHE_TENTATIVA_INVALIDO
+        - DETALHE_PAGAMENTO_INVALIDO
+      example: SALDO_INSUFICIENTE
+      description: |
+        Código identificador do motivo de rejeição.
+        Motivo da rejeição do pagamento. Informações complementares sobre o motivo do status.
+        [Restrição] Esse motivo deverá ser enviado quando o campo `/data/status` for igual a RJCT (REJECTED).

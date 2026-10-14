@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+if ! head -n 1 "$1" | grep -Eiq '^[a-z][a-z0-9-]*(\([^()[:space:]]+\))?!?: [^[:space:]].*$'; then
+  echo "Commit rejeitado: use Conventional Commits, com descrição em português." >&2
+  echo "Exemplos: feat: adicionar domínio | fix(parser): corrigir extração | feat!: alterar contrato" >&2
+  exit 1
+fi

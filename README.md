@@ -164,10 +164,23 @@ E aponte o client para o build local:
 ## Desenvolvimento
 
 ```bash
+npm install        # instala dependências e ativa os hooks do Git
 npm test           # vitest (fixtures locais, sem rede)
 npm run typecheck  # tsc --noEmit
 npm run build      # tsup → dist/
 ```
+
+Os hooks versionados em `.githooks/` são ativados pelo script `prepare` durante
+`npm install` ou `npm ci`. Para ativá-los em um clone com dependências já
+instaladas, execute `npm run prepare`.
+
+Antes de cada commit, `pre-commit` executa toda a suíte (`npm test`) e bloqueia o
+commit se algum teste falhar. O hook `commit-msg` valida o título no formato
+[Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/), com
+escopo e `!` opcionais e descrição obrigatória. Exemplos: `feat: adicionar domínio`,
+`fix(parser): corrigir extração` e `feat!: alterar contrato`. Escreva as descrições
+em português brasileiro. Os hooks são locais e podem ser ignorados com
+`git commit --no-verify`.
 
 ### Skills para consulta e manutenção dos domínios
 

@@ -4,6 +4,11 @@
 <p>A liquidação da transação é realizada entre 0h e 8h do dia programado.</p>
 <h2>Segunda Tentativa (Retentativa Intradia)</h2>
 <p>Ocorre apenas em casos de falha na primeira janela, com novo e2eID quando necessário.</p>
+<h2>Tabela 1: Situações de erro que exigem novas tentativas de liquidação</h2>
+<table>
+  <tr><th>Código de erro</th><th>Contabiliza tentativa?</th><th>Permite nova tentativa intradia?</th><th>Exige reenvio de e2eID?</th></tr>
+  <tr><td>DETALHE_PAGAMENTO_INVALIDO</td><td>NÃO</td><td>NÃO</td><td>NÃO</td></tr>
+</table>
 <h1>Edição do consentimento</h1>
 <table>
   <tr><th>Campo</th><th>Editável</th></tr>

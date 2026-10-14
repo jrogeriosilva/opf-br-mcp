@@ -33,6 +33,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
+    "prepare": "node scripts/install-hooks.js",
     "build": "tsup",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",

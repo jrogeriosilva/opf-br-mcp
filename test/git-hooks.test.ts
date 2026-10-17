@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-const hooks = fileURLToPath(new URL("../.githooks/", import.meta.url));
+const hooks = fileURLToPath(new URL("../.husky/", import.meta.url));
 let dir: string;
 
 beforeEach(() => {
@@ -22,18 +22,18 @@ describe("hooks do Git", () => {
     ["fix(parser): corrigir extração", 0],
     ["feat!: alterar contrato", 0],
     ["feat(api)!: alterar contrato\n\nBREAKING CHANGE: novo formato", 0],
-    ["DOCS: atualizar documentação", 0],
+    ["DOCS: atualizar documentação", 1],
     ["atualizar documentação", 1],
     ["feat:adicionar domínio", 1],
     ["feat:   ", 1],
-    ["feat(): adicionar domínio", 1],
-    ["feat( ): adicionar domínio", 1],
-    ["", 1],
+    ["fix(parser: corrigir extração", 1],
+    ["foo: adicionar domínio", 1],
+    [`feat: ${"a".repeat(95)}`, 1],
     ["título inválido\n\nfeat: adicionar domínio", 1],
   ])("valida a mensagem %j", (message, status) => {
     const file = join(dir, "COMMIT_EDITMSG");
     writeFileSync(file, message);
-    const result = spawnSync(join(hooks, "commit-msg"), [file]);
+    const result = spawnSync("sh", [join(hooks, "commit-msg"), file]);
     expect(result.error).toBeUndefined();
     expect(result.status).toBe(status);
   });
@@ -42,7 +42,7 @@ describe("hooks do Git", () => {
     writeFileSync(join(dir, "npm"), `#!/bin/sh\n[ "$*" = "test" ] || exit 99\nexit ${status}\n`, {
       mode: 0o755,
     });
-    const result = spawnSync(join(hooks, "pre-commit"), [], {
+    const result = spawnSync("sh", [join(hooks, "pre-commit")], {
       env: { ...process.env, PATH: `${dir}:${process.env.PATH}` },
     });
     expect(result.error).toBeUndefined();

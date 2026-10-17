@@ -170,17 +170,22 @@ npm run typecheck  # tsc --noEmit
 npm run build      # tsup → dist/
 ```
 
-Os hooks versionados em `.githooks/` são ativados pelo script `prepare` durante
-`npm install` ou `npm ci`. Para ativá-los em um clone com dependências já
-instaladas, execute `npm run prepare`.
+Os hooks versionados em `.husky/` são gerenciados pelo
+[Husky](https://typicode.github.io/husky/) e ativados pelo script `prepare` durante
+`npm install` ou `npm ci`. Para ativá-los em um clone com dependências já instaladas,
+execute `npm run prepare`.
 
 Antes de cada commit, `pre-commit` executa toda a suíte (`npm test`) e bloqueia o
-commit se algum teste falhar. O hook `commit-msg` valida o título no formato
-[Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/), com
-escopo e `!` opcionais e descrição obrigatória. Exemplos: `feat: adicionar domínio`,
+commit se algum teste falhar. O hook `commit-msg` executa
+[commitlint](https://commitlint.js.org/) com `@commitlint/config-conventional`,
+configurado em `commitlint.config.js`, para validar
+[Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/).
+Use tipos em minúsculas (`feat`, `fix`, `docs`, `chore`, `test`, `refactor`, `perf`,
+`style`, `build`, `ci` ou `revert`), descrição obrigatória e título de até 100
+caracteres. Escopo e `!` são opcionais. Exemplos: `feat: adicionar domínio`,
 `fix(parser): corrigir extração` e `feat!: alterar contrato`. Escreva as descrições
 em português brasileiro. Os hooks são locais e podem ser ignorados com
-`git commit --no-verify`.
+`git commit --no-verify` ou `HUSKY=0`.
 
 ### Skills para consulta e manutenção dos domínios
 
